@@ -251,11 +251,21 @@
   );
   scene.add(starField);
 
-  // Germany target rotation (Three.js SphereGeometry UV: lon 0° faces +Z at rot.y=0,
-  // positive rot.y rotates eastward longitudes into view)
-  // rot.x = -lat tilts north pole toward camera; rot.y = lon offset
-  const TGT_X = -48.86 * Math.PI / 180;
-  const TGT_Y =   9.55 * Math.PI / 180; // fine-tune if needed
+  // ── Exact quaternion so Steinenberg faces the camera ─────
+  // Three.js SphereGeometry maps texture as:
+  //   x = -R·cos(phi)·sin(theta),  z = R·sin(phi)·sin(theta),  y = R·cos(theta)
+  //   phi = U·2π,  theta = V·π
+  // Steinenberg: lon=9.55°E → U=0.5265 → phi=3.310 rad
+  //              lat=48.86°N → theta=0.718 rad (colatitude)
+  //   x = 0.650,  y = 0.752,  z = -0.110
+  const steinPos  = new THREE.Vector3(0.650, 0.752, -0.110).normalize();
+  const camFwd    = new THREE.Vector3(0, 0, 1);
+  const TGT_QUAT  = new THREE.Quaternion().setFromUnitVectors(steinPos, camFwd);
+
+  const Y_AXIS    = new THREE.Vector3(0, 1, 0);
+  const autoQuat  = new THREE.Quaternion();
+  const blendQuat = new THREE.Quaternion();
+  let autoAngle   = 0;
 
   // Scroll progress
   function getP() {
@@ -279,7 +289,7 @@
       attribution: 'Imagery &copy; Esri, Maxar, GeoEye, Earthstar Geographics',
       maxZoom: 19,
     }).addTo(leaflet);
-    leaflet.setView([48.8632, 9.5541], 17);
+    leaflet.setView([48.8632, 9.5541], 14);
 
     // Custom teardrop pin
     const pinIcon = L.divIcon({
@@ -294,7 +304,7 @@
   }
 
   // ── Animation loop ────────────────────────────────────────
-  let autoY = 0, lastTime = 0;
+  let lastTime = 0;
 
   function render(ts) {
     const dt = Math.min(ts - lastTime, 50) / 1000;
@@ -302,15 +312,17 @@
 
     const p = getP();
 
-    // Auto-rotate Y, slows toward end
-    autoY += 0.28 * dt * (1 - clamp(p / 0.72, 0, 1));
+    // Auto-rotate (slows and stops as p approaches 0.75)
+    autoAngle += 0.28 * dt * (1 - clamp(p / 0.75, 0, 1));
+    autoQuat.setFromAxisAngle(Y_AXIS, autoAngle);
 
-    // Blend rotation toward Germany
-    const rotP      = easeIO(clamp(p / 0.78, 0, 1));
-    earthMesh.rotation.x = lerp(-0.25, TGT_X, rotP);
-    earthMesh.rotation.y = autoY + easeIO(clamp(p * 1.4, 0, 1)) * (TGT_Y - autoY);
-    cloudMesh.rotation.x = earthMesh.rotation.x;
-    cloudMesh.rotation.y = earthMesh.rotation.y + 0.003;
+    // Slerp from auto-rotation toward exact Germany quaternion
+    const rotP = easeIO(clamp(p / 0.80, 0, 1));
+    blendQuat.slerpQuaternions(autoQuat, TGT_QUAT, rotP);
+    earthMesh.quaternion.copy(blendQuat);
+    // Clouds: same rotation + tiny extra drift
+    cloudMesh.quaternion.copy(blendQuat);
+    cloudMesh.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(Y_AXIS, 0.004));
 
     // Camera zoom
     camera.position.z = lerp(2.8, 1.04, easeIn3(clamp(p / 0.92, 0, 1)));
