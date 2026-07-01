@@ -59,44 +59,41 @@
   <!-- =====================================================
        HERO — Scroll-expand animation
        ===================================================== -->
-  <section id="hero" class="expand-hero" aria-label="Willkommen beim Schwäbischen Albverein Ortsgruppe Steinenberg">
+  <section id="hero" class="leaf-hero" aria-label="Willkommen beim Schwäbischen Albverein Ortsgruppe Steinenberg">
 
-    <!-- Dark forest background — fades as media expands -->
-    <div class="expand-hero__bg" id="expand-bg" aria-hidden="true"></div>
+    <!-- Dark forest background -->
+    <div class="leaf-hero__bg" aria-hidden="true"></div>
 
-    <!-- The growing media (starts 300×400px, expands to fill viewport) -->
-    <div class="expand-hero__media" id="expand-media" aria-hidden="true">
+    <!-- Main leaf that grows to fill the screen on load -->
+    <div class="leaf-hero__leaf-wrap" aria-hidden="true">
+      <svg class="leaf-hero__leaf-svg" viewBox="0 0 100 100" aria-hidden="true">
+        <path d="M50,3 C72,8 95,32 94,52 C93,74 70,94 50,97 C30,94 7,74 6,52 C5,32 28,8 50,3 Z"/>
+      </svg>
+    </div>
+
+    <!-- Decorative floating leaves -->
+    <div class="leaf-hero__deco" aria-hidden="true">
+      <svg class="leaf-deco leaf-deco--1" viewBox="0 0 100 100"><path d="M50,3 C72,8 95,32 94,52 C93,74 70,94 50,97 C30,94 7,74 6,52 C5,32 28,8 50,3 Z"/></svg>
+      <svg class="leaf-deco leaf-deco--2" viewBox="0 0 100 100"><path d="M50,3 C72,8 95,32 94,52 C93,74 70,94 50,97 C30,94 7,74 6,52 C5,32 28,8 50,3 Z"/></svg>
+      <svg class="leaf-deco leaf-deco--3" viewBox="0 0 100 100"><path d="M50,3 C72,8 95,32 94,52 C93,74 70,94 50,97 C30,94 7,74 6,52 C5,32 28,8 50,3 Z"/></svg>
+      <svg class="leaf-deco leaf-deco--4" viewBox="0 0 100 100"><path d="M50,3 C72,8 95,32 94,52 C93,74 70,94 50,97 C30,94 7,74 6,52 C5,32 28,8 50,3 Z"/></svg>
+    </div>
+
+    <!-- Hero content -->
+    <div class="leaf-hero__content">
+      <p class="leaf-hero__eyebrow">SAV OG Steinenberg · 174 Mitglieder</p>
       <img src="assets/images/logo.png"
            alt="SAV OG Steinenberg – Schwäbischer Albverein"
-           class="expand-hero__img expand-hero__img--logo">
-      <div class="expand-hero__dim" id="expand-dim"></div>
-    </div>
-
-    <!-- Title & meta text (centered, splits apart on scroll) -->
-    <div class="expand-hero__text" aria-hidden="true">
-      <div class="expand-hero__meta">
-        <span id="expand-meta1">Steinenberg · Wieslauftal · Schwäbische Alb</span>
-        <span id="expand-meta2">↓ Scrollen zum Erkunden</span>
-      </div>
-      <div class="expand-hero__words">
-        <span class="expand-hero__word" id="expand-w1">Gemeinsam</span>
-        <span class="expand-hero__word expand-hero__word--em" id="expand-w2">auf dem Weg.</span>
-      </div>
-    </div>
-
-    <!-- Post-expansion CTA (fades in once media fills screen) -->
-    <div class="expand-hero__cta" id="expand-cta" aria-hidden="true">
-      <p class="expand-hero__cta-eyebrow">SAV OG Steinenberg · 174 Mitglieder</p>
-      <h1 class="expand-hero__cta-title">Gemeinsam<br><em>auf dem Weg.</em></h1>
-      <p class="expand-hero__cta-sub">Rund 20 Touren im Jahr — für Familien, Senioren und alle Naturbegeisterten.</p>
-      <div class="expand-hero__cta-btns">
+           class="leaf-hero__logo">
+      <h1 class="leaf-hero__title">Gemeinsam<br><em>auf dem Weg.</em></h1>
+      <p class="leaf-hero__sub">Rund 20 Touren im Jahr — für Familien, Senioren und alle Naturbegeisterten.</p>
+      <div class="leaf-hero__btns">
         <a href="#wanderplan" class="btn btn--white btn--lg">Nächste Touren</a>
         <a href="#mitglied" class="btn btn--outline-white btn--lg">Mitglied werden</a>
       </div>
-      <button class="expand-hero__scroll-btn" id="expand-scroll-btn" aria-label="Zum Inhalt scrollen">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Entdecken</span>
-      </button>
+      <a href="#wanderplan" class="leaf-hero__scroll" aria-label="Zum Inhalt scrollen">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </div>
 
   </section>
