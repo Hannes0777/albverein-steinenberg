@@ -19,124 +19,6 @@
   update();
 })();
 
-// ── Scroll-expand Hero ────────────────────────────────────
-(function () {
-  const media     = document.getElementById('expand-media');
-  const bg        = document.getElementById('expand-bg');
-  const dim       = document.getElementById('expand-dim');
-  const meta1     = document.getElementById('expand-meta1');
-  const meta2     = document.getElementById('expand-meta2');
-  const w1        = document.getElementById('expand-w1');
-  const w2        = document.getElementById('expand-w2');
-  const cta       = document.getElementById('expand-cta');
-  const scrollBtn = document.getElementById('expand-scroll-btn');
-
-  if (!media) return;
-
-  let progress    = 0;
-  let expanded    = false;
-  let touchStartY = 0;
-  const mobile    = () => window.innerWidth < 768;
-
-  function update() {
-    const m = mobile();
-    const p = progress;
-
-    // Grow media — CSS max-width/max-height clamp to viewport
-    media.style.width        = (380 + p * (m ? 570  : 1170)) + 'px';
-    media.style.height       = (340 + p * (m ? 260  : 460))  + 'px';
-    media.style.borderRadius = Math.max(0, 16 * (1 - p))     + 'px';
-
-    // Fade background and media dim
-    bg.style.opacity  = Math.max(0, 1 - p);
-    dim.style.opacity = Math.max(0, 0.42 - p * 0.35);
-
-    // Split title and meta apart horizontally
-    const tx = p * (m ? 180 : 150);
-    w1.style.transform    = 'translateX(-' + tx + 'vw)';
-    w2.style.transform    = 'translateX('  + tx + 'vw)';
-    meta1.style.transform = 'translateX(-' + tx + 'vw)';
-    meta2.style.transform = 'translateX('  + tx + 'vw)';
-
-    // CTA fades in near the end
-    if (p >= 0.96) {
-      cta.style.opacity       = String(Math.min(1, (p - 0.96) / 0.04));
-      cta.style.pointerEvents = 'auto';
-      cta.removeAttribute('aria-hidden');
-    } else {
-      cta.style.opacity       = '0';
-      cta.style.pointerEvents = 'none';
-      cta.setAttribute('aria-hidden', 'true');
-    }
-  }
-
-  function advance(delta) {
-    progress = Math.min(1, Math.max(0, progress + delta));
-    if (progress >= 1) expanded = true;
-    if (progress <= 0) expanded = false;
-    update();
-  }
-
-  // ── Wheel ────────────────────────────────────────────────
-  window.addEventListener('wheel', function (e) {
-    if (expanded) {
-      if (e.deltaY < 0 && window.scrollY <= 5) {
-        expanded = false;
-        e.preventDefault();
-        advance(e.deltaY * 0.001);
-      }
-      return;
-    }
-    e.preventDefault();
-    advance(e.deltaY * 0.001);
-  }, { passive: false });
-
-  // ── Scroll lock while animating ──────────────────────────
-  window.addEventListener('scroll', function () {
-    if (!expanded) window.scrollTo(0, 0);
-  }, { passive: false });
-
-  // ── Touch ────────────────────────────────────────────────
-  window.addEventListener('touchstart', function (e) {
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
-
-  window.addEventListener('touchmove', function (e) {
-    if (!touchStartY) return;
-    const y  = e.touches[0].clientY;
-    const dy = touchStartY - y; // positive = finger moved up = scroll down
-
-    if (expanded) {
-      if (dy < -20 && window.scrollY <= 5) {
-        expanded = false;
-        e.preventDefault();
-        advance(dy * 0.004);
-      }
-      touchStartY = y;
-      return;
-    }
-
-    e.preventDefault();
-    advance(dy * 0.004);
-    touchStartY = y;
-  }, { passive: false });
-
-  window.addEventListener('touchend', function () { touchStartY = 0; });
-
-  // ── Scroll down button ───────────────────────────────────
-  if (scrollBtn) {
-    scrollBtn.addEventListener('click', function () {
-      window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
-    });
-  }
-
-  // ── Resize ───────────────────────────────────────────────
-  window.addEventListener('resize', update);
-
-  // ── Initial render ───────────────────────────────────────
-  update();
-})();
-
 // ── Sticky navigation ─────────────────────────────────────
 (function () {
   const nav  = document.getElementById('main-nav');
@@ -185,7 +67,7 @@
   toggle.addEventListener('click', () => isOpen ? close() : open());
   menu.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen) { close(); toggle.focus(); } });
-  document.addEventListener('click', e => { if (isOpen && nav && !nav.contains(e.target)) close(); });
+  document.addEventListener('click', e => { if (isOpen && !nav.contains(e.target) && !menu.contains(e.target)) close(); });
 })();
 
 // ── Smooth scroll with nav offset ─────────────────────────
@@ -289,6 +171,226 @@
       applyFilters();
     });
   }
+})();
+
+// ── Globe hero animation (Three.js + Leaflet satellite) ───
+(function () {
+  'use strict';
+
+  const section    = document.getElementById('hero');
+  if (!section || !section.classList.contains('globe-hero')) return;
+  if (typeof THREE === 'undefined') return;
+
+  const canvas     = document.getElementById('globe-canvas');
+  const landingMap = document.getElementById('landing-map');
+  const content    = document.getElementById('globe-content');
+  const ctaEl      = document.getElementById('globe-cta');
+  const cueEl      = document.getElementById('globe-scroll-cue');
+  if (!canvas) return;
+
+  // ── Helpers ──────────────────────────────────────────────
+  const clamp    = (v, a, b) => Math.min(b, Math.max(a, v));
+  const lerp     = (a, b, t) => a + (b - a) * t;
+  const easeIn3  = t => t * t * t;
+  const easeOut2 = t => 1 - (1 - t) * (1 - t);
+  const easeIO   = t => t < 0.5 ? 4*t*t*t : 1 - 4*(1-t)*(1-t)*(1-t);
+  const mapR     = (v, a, b, c, d) => lerp(c, d, clamp((v - a) / (b - a), 0, 1));
+
+  // ── Three.js scene ────────────────────────────────────────
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x00050f, 1);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 200);
+  camera.position.z = 2.8;
+
+  // Earth textures (Three.js r134 repo, stable URLs with CORS)
+  const TEX = 'https://raw.githubusercontent.com/mrdoob/three.js/r134/examples/textures/planets/';
+  const loader = new THREE.TextureLoader();
+  loader.crossOrigin = 'anonymous';
+
+  const earthMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 64, 64),
+    new THREE.MeshPhongMaterial({
+      map:         loader.load(TEX + 'earth_atmos_2048.jpg'),
+      normalMap:   loader.load(TEX + 'earth_normal_2048.jpg'),
+      specularMap: loader.load(TEX + 'earth_specular_2048.jpg'),
+      specular:    new THREE.Color(0x333333),
+      shininess:   18,
+    })
+  );
+  scene.add(earthMesh);
+
+  // Cloud layer
+  const cloudMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(1.007, 64, 64),
+    new THREE.MeshPhongMaterial({ map: loader.load(TEX + 'earth_clouds_1024.png'), transparent: true, opacity: 0.5 })
+  );
+  scene.add(cloudMesh);
+
+  // Atmosphere rim
+  scene.add(new THREE.Mesh(
+    new THREE.SphereGeometry(1.2, 32, 32),
+    new THREE.MeshBasicMaterial({ color: 0x4488ff, transparent: true, opacity: 0.1, side: THREE.BackSide })
+  ));
+
+  // Lighting – sun from upper-right
+  const sun = new THREE.DirectionalLight(0xfff5e0, 1.3);
+  sun.position.set(5, 3, 5);
+  scene.add(sun);
+  scene.add(new THREE.AmbientLight(0x223355, 0.35));
+
+  // Stars (point cloud)
+  const starPos = new Float32Array(3000 * 3);
+  for (let i = 0; i < starPos.length; i++) starPos[i] = (Math.random() - 0.5) * 200;
+  const starField = new THREE.Points(
+    (() => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(starPos, 3)); return g; })(),
+    new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, sizeAttenuation: true })
+  );
+  scene.add(starField);
+
+  // ── Exact quaternion so Steinenberg faces the camera ─────
+  // Three.js SphereGeometry maps texture as:
+  //   x = -R·cos(phi)·sin(theta),  z = R·sin(phi)·sin(theta),  y = R·cos(theta)
+  //   phi = U·2π,  theta = V·π
+  // Steinenberg: lon=9.55°E → U=0.5265 → phi=3.310 rad
+  //              lat=48.86°N → theta=0.718 rad (colatitude)
+  //   x = 0.650,  y = 0.752,  z = -0.110
+  const steinPos  = new THREE.Vector3(0.650, 0.752, -0.110).normalize();
+  const camFwd    = new THREE.Vector3(0, 0, 1);
+  const TGT_QUAT  = new THREE.Quaternion().setFromUnitVectors(steinPos, camFwd);
+
+  const Y_AXIS    = new THREE.Vector3(0, 1, 0);
+  const autoQuat  = new THREE.Quaternion();
+  const blendQuat = new THREE.Quaternion();
+  let autoAngle   = 0;
+
+  // Scroll progress
+  function getP() {
+    const scrollable = section.offsetHeight - window.innerHeight;
+    return scrollable > 0 ? clamp(window.scrollY / scrollable, 0, 1) : 0;
+  }
+
+  // ── Leaflet satellite map ─────────────────────────────────
+  let leaflet = null, mapInited = false;
+
+  function initLeaflet() {
+    if (mapInited || typeof L === 'undefined' || !landingMap) return;
+    mapInited = true;
+    leaflet = L.map('landing-map', {
+      zoomControl: false, attributionControl: true,
+      dragging: false, scrollWheelZoom: false,
+      doubleClickZoom: false, touchZoom: false,
+    });
+    // ESRI World Imagery (satellite) – free, no API key, proper attribution
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Imagery &copy; Esri, Maxar, GeoEye, Earthstar Geographics',
+      maxZoom: 19,
+    }).addTo(leaflet);
+    leaflet.setView([48.8632, 9.5541], 14);
+
+    // Custom teardrop pin
+    const pinIcon = L.divIcon({
+      className: '',
+      html: '<div class="lp-pin"><div class="lp-pin__ball"></div></div>',
+      iconAnchor: [14, 32],
+    });
+    L.marker([48.8632, 9.5541], { icon: pinIcon })
+      .bindPopup('<strong>Obersteinenberger Str.&nbsp;50</strong><br>73635 Rudersberg', { offset: [0, -10] })
+      .addTo(leaflet)
+      .openPopup();
+  }
+
+  // ── Animation loop ────────────────────────────────────────
+  let lastTime = 0;
+
+  function render(ts) {
+    const dt = Math.min(ts - lastTime, 50) / 1000;
+    lastTime = ts;
+
+    const p = getP();
+
+    // Auto-rotate (slows and stops as p approaches 0.75)
+    autoAngle += 0.28 * dt * (1 - clamp(p / 0.75, 0, 1));
+    autoQuat.setFromAxisAngle(Y_AXIS, autoAngle);
+
+    // Slerp from auto-rotation toward exact Germany quaternion
+    const rotP = easeIO(clamp(p / 0.80, 0, 1));
+    blendQuat.slerpQuaternions(autoQuat, TGT_QUAT, rotP);
+    earthMesh.quaternion.copy(blendQuat);
+    // Clouds: same rotation + tiny extra drift
+    cloudMesh.quaternion.copy(blendQuat);
+    cloudMesh.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(Y_AXIS, 0.004));
+
+    // Camera zoom
+    camera.position.z = lerp(2.8, 1.04, easeIn3(clamp(p / 0.92, 0, 1)));
+    camera.fov        = lerp(45, 28, easeIO(clamp(p / 0.92, 0, 1)));
+    camera.updateProjectionMatrix();
+
+    // Stars fade
+    starField.material.opacity = clamp(1 - p * 5, 0, 1);
+
+    renderer.render(scene, camera);
+
+    // Satellite map fade-in
+    const mapA = easeOut2(mapR(p, 0.78, 0.97, 0, 1));
+    if (mapA > 0.02 && !mapInited) initLeaflet();
+    if (landingMap) {
+      landingMap.style.opacity       = mapA;
+      landingMap.style.pointerEvents = mapA > 0.5 ? 'auto' : 'none';
+      landingMap.setAttribute('aria-hidden', mapA < 0.1 ? 'true' : 'false');
+      if (mapInited && leaflet && mapA > 0.1) leaflet.invalidateSize();
+    }
+
+    // Text slide-out
+    if (content) {
+      const slideP = easeOut2(mapR(p, 0.08, 0.44, 0, 1));
+      const textOp = 1 - easeOut2(mapR(p, 0.18, 0.50, 0, 1));
+      const mob    = window.innerWidth <= 768;
+      content.style.transform = mob
+        ? `translateX(-50%) translateY(calc(-50% - ${slideP * 60}%))`
+        : `translateY(-50%) translateX(${-slideP * 120}%)`;
+      content.style.opacity = Math.max(0, textOp);
+    }
+
+    // CTA buttons
+    if (ctaEl) {
+      const op = mapR(p, 0.85, 1, 0, 1);
+      ctaEl.style.opacity       = op;
+      ctaEl.style.pointerEvents = op > 0.4 ? 'auto' : 'none';
+      ctaEl.setAttribute('aria-hidden', op < 0.1 ? 'true' : 'false');
+    }
+
+    // Scroll cue
+    if (cueEl) cueEl.style.opacity = clamp(1 - p * 14, 0, 1);
+
+    requestAnimationFrame(render);
+  }
+
+  // ── Resize ────────────────────────────────────────────────
+  function resize() {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    if (mapInited && leaflet) leaflet.invalidateSize();
+  }
+
+  // prefers-reduced-motion: skip to satellite map immediately
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    section.style.height = '100vh';
+    if (content) content.style.opacity = '0';
+    if (cueEl)   cueEl.style.display = 'none';
+    if (ctaEl)   { ctaEl.style.opacity = '1'; ctaEl.style.pointerEvents = 'auto'; ctaEl.removeAttribute('aria-hidden'); }
+    if (landingMap) { landingMap.style.opacity = '1'; landingMap.style.pointerEvents = 'auto'; landingMap.removeAttribute('aria-hidden'); }
+    initLeaflet();
+    renderer.render(scene, camera);
+    return;
+  }
+
+  window.addEventListener('resize', resize, { passive: true });
+  requestAnimationFrame(ts => { lastTime = ts; requestAnimationFrame(render); });
 })();
 
 // ── Contact form ──────────────────────────────────────────
