@@ -159,109 +159,95 @@ button, input, select, textarea { font: inherit; }
 .nav--scrolled .nav__cta { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
 .nav--scrolled .nav__cta:hover { background: var(--color-primary-dark); border-color: var(--color-primary-dark); }
 
-/* ── Leaf Hero ────────────────────────────────────────────── */
-.leaf-hero {
-  position: relative; width: 100%; height: 100vh;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
+/* ── Globe Hero ───────────────────────────────────────────── */
+.globe-hero {
+  height: 300vh;
+  position: relative;
 }
 
-/* Dark gradient so nav logo stays readable */
-.leaf-hero::before {
+.globe-hero__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #00050f;
+}
+
+/* Nav gradient so logo stays legible */
+.globe-hero__sticky::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0;
-  height: 160px; z-index: 5; pointer-events: none;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%);
+  height: 140px; z-index: 5; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 100%);
 }
 
-.leaf-hero__bg {
-  position: absolute; inset: 0; z-index: 0;
-  background: linear-gradient(160deg, #020c02 0%, #061206 30%, #091a09 60%, #122812 100%);
-}
-
-/* ── Expanding leaf ─────────────────── */
-.leaf-hero__leaf-wrap {
-  position: absolute; top: 50%; left: 50%;
-  width: 80px; height: 100px;
-  transform: translate(-50%, -50%) scale(0.08);
+.globe-hero__canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
   z-index: 1;
-  animation: leafGrow 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  display: block;
 }
 
-.leaf-hero__leaf-svg { width: 100%; height: 100%; fill: var(--color-primary-dark); }
-
-@keyframes leafGrow {
-  0%   { transform: translate(-50%, -50%) scale(0.08); opacity: 0; }
-  12%  { opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(42); opacity: 1; }
+/* Text block (JS animates transform + opacity) */
+.globe-hero__content {
+  position: absolute;
+  left: 8%; top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  max-width: 460px;
+  will-change: transform, opacity;
 }
 
-/* ── Decorative floating leaves ────── */
-.leaf-hero__deco { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-.leaf-deco { position: absolute; fill: rgba(255,255,255,0.05); }
-
-.leaf-deco--1 { width: 90px; bottom: 18%; left: 7%;   animation: leafFloat1  7s ease-in-out 0s   infinite; }
-.leaf-deco--2 { width: 60px; top: 20%;    right: 9%;  animation: leafFloat2  9s ease-in-out 1.5s infinite; }
-.leaf-deco--3 { width: 45px; bottom: 32%; right: 14%; animation: leafFloat3  8s ease-in-out 3s   infinite; }
-.leaf-deco--4 { width: 70px; top: 14%;    left: 14%;  animation: leafFloat4 11s ease-in-out 0.5s infinite; }
-
-@keyframes leafFloat1 { 0%,100% { transform: rotate(-15deg) translateY(0);  } 50% { transform: rotate(-15deg) translateY(-12px); } }
-@keyframes leafFloat2 { 0%,100% { transform: rotate(30deg)  translateY(0);  } 50% { transform: rotate(30deg)  translateY(-10px); } }
-@keyframes leafFloat3 { 0%,100% { transform: rotate(-40deg) translateY(0);  } 50% { transform: rotate(-40deg) translateY(-14px); } }
-@keyframes leafFloat4 { 0%,100% { transform: rotate(20deg)  translateY(0);  } 50% { transform: rotate(20deg)  translateY(-8px);  } }
-
-/* ── Content ───────────────────────── */
-.leaf-hero__content {
-  position: relative; z-index: 10;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 1.2rem; text-align: center; padding: 2rem;
+.globe-hero__eyebrow {
+  font-size: 0.76rem; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(160,230,150,0.85);
+  margin-bottom: 0.8rem;
 }
 
-.leaf-hero__eyebrow {
-  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
-  text-transform: uppercase; color: rgba(160,230,150,0.82);
-  animation: itemRise 0.65s ease 1.55s both;
-}
-
-.leaf-hero__logo {
-  width: 110px; height: auto;
+.globe-hero__logo {
+  width: 100px; height: auto;
   filter: brightness(0) invert(1);
-  animation: itemRise 0.65s ease 1.7s both;
+  margin-bottom: 1.1rem;
+  display: block;
 }
 
-.leaf-hero__title {
+.globe-hero__title {
   font-family: 'Lora', serif;
-  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
   font-weight: 700; color: #fff; line-height: 1.15;
-  animation: itemRise 0.65s ease 1.85s both;
+  margin-bottom: 0.9rem;
 }
-.leaf-hero__title em { font-style: italic; color: rgba(160,240,140,0.92); }
+.globe-hero__title em { font-style: italic; color: rgba(160,240,140,0.92); }
 
-.leaf-hero__sub {
-  font-size: 1rem; color: rgba(255,255,255,0.65);
-  max-width: 460px; line-height: 1.65;
-  animation: itemRise 0.65s ease 2s both;
+.globe-hero__sub {
+  font-size: 0.9875rem; color: rgba(255,255,255,0.62); line-height: 1.65;
 }
 
-.leaf-hero__btns {
-  display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
-  animation: itemRise 0.65s ease 2.15s both;
+/* CTA buttons (JS drives opacity) */
+.globe-hero__cta {
+  position: absolute;
+  bottom: 10%; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
 }
 
-.leaf-hero__scroll {
-  display: block; color: rgba(255,255,255,0.38); transition: color 0.2s;
-  animation: itemRise 0.65s ease 2.3s both, scrollBounce 2.6s ease-in-out 3s infinite;
-}
-.leaf-hero__scroll:hover { color: rgba(255,255,255,0.72); }
-
-@keyframes itemRise {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Scroll cue arrow */
+.globe-hero__scroll-cue {
+  position: absolute;
+  bottom: 2rem; left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  color: rgba(255,255,255,0.38);
+  animation: scrollBounce 2.5s ease-in-out 1.2s infinite;
 }
 
 @keyframes scrollBounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(7px); }
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(8px); }
 }
 
 /* ── Sections ──────────────────────────────────────────── */
@@ -737,8 +723,16 @@ button, input, select, textarea { font: inherit; }
 @media (max-width: 768px) {
   :root { --section-py: 3.5rem; }
 
-  .leaf-hero__title { font-size: clamp(2rem, 8vw, 3.5rem); }
-  .leaf-hero__sub   { font-size: 0.9375rem; }
+  .globe-hero { height: 260vh; }
+  .globe-hero__content {
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    text-align: center;
+    width: 90%;
+    max-width: none;
+  }
+  .globe-hero__logo { margin: 0 auto 1rem; }
+  .globe-hero__title { font-size: clamp(2rem, 8vw, 3.2rem); }
 
   .tour-search-bar { flex-direction: column; align-items: stretch; }
   .events-grid { grid-template-columns: 1fr; }
