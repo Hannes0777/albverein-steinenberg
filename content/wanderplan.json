@@ -1,5 +1,6 @@
 {
   "year": "2026",
+  "note": "Alle Touren sind offen für Gäste. Treffpunkt ist immer der genannte Parkplatz zur angegebenen Uhrzeit. Festes Schuhwerk empfohlen.",
   "touren": [
     {
       "date": "2026-01-19",
@@ -126,7 +127,13 @@
       "title": "Jahreshauptversammlung",
       "meta": "19:00 Uhr · MZH Steinenberg · Mit Jahresrückblick und Ehrungen",
       "status": "upcoming"
+    },
+    {
+      "date": "2026-07-05",
+      "type": "wanderung",
+      "title": "test",
+      "meta": "test",
+      "status": "past"
     }
-  ],
-  "note": "Alle Touren sind offen für Gäste. Treffpunkt ist immer der genannte Parkplatz zur angegebenen Uhrzeit. Festes Schuhwerk empfohlen."
+  ]
 }
