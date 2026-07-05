@@ -1,0 +1,332 @@
+# ============================================================
+#  Sveltia CMS – Konfiguration für SAV OG Steinenberg
+#  Bearbeitet werden JSON-Dateien im Ordner /content/
+# ============================================================
+
+backend:
+  name: github
+  repo: Hannes0777/albverein-steinenberg
+  branch: master
+  # Tragen Sie hier die URL Ihres Cloudflare-Workers ein (siehe SETUP.md)
+  base_url: https://DEIN-WORKER.workers.dev
+
+media_folder: uploads
+public_folder: /uploads
+
+locale: de
+
+# ============================================================
+#  SAMMLUNGEN
+# ============================================================
+
+collections:
+
+  # ----------------------------------------------------------
+  #  AKTUELLES & NEUIGKEITEN  (Kunde kann Beiträge anlegen/löschen)
+  # ----------------------------------------------------------
+  - name: aktuelles
+    label: "📢 Aktuelles & Neuigkeiten"
+    description: "Hier können Sie aktuelle Beiträge, Vereinsnews und Ankündigungen veröffentlichen. Einfach einen neuen Eintrag hinzufügen – er erscheint dann auf der Website."
+    files:
+      - name: aktuelles
+        label: "Beiträge verwalten"
+        file: content/aktuelles.json
+        fields:
+          - name: beitraege
+            label: "Beiträge"
+            label_singular: "Beitrag"
+            widget: list
+            summary: "{{datum}} – {{titel}}"
+            fields:
+              - name: datum
+                label: "Datum (z.B. 15.07.2026)"
+                widget: string
+                hint: "Bitte im Format TT.MM.JJJJ eingeben"
+              - name: titel
+                label: "Titel des Beitrags"
+                widget: string
+              - name: kategorie
+                label: "Kategorie"
+                widget: select
+                options:
+                  - { label: "Aktuell / Allgemein", value: "aktuell" }
+                  - { label: "Wanderung", value: "wanderung" }
+                  - { label: "Vereinsnews", value: "verein" }
+                  - { label: "Sonstiges", value: "sonstiges" }
+                default: "aktuell"
+              - name: text
+                label: "Inhalt"
+                widget: markdown
+                hint: "Sie können Text fett (**fett**) oder kursiv (*kursiv*) formatieren. Leerzeile = neuer Absatz."
+              - name: bild
+                label: "Bild (optional)"
+                widget: image
+                required: false
+                hint: "Ein Foto zum Beitrag – wird automatisch in /uploads/ gespeichert."
+
+  # ----------------------------------------------------------
+  #  WANDERPLAN
+  # ----------------------------------------------------------
+  - name: wanderplan
+    label: "🥾 Wanderplan"
+    description: "Verwalten Sie alle Touren des Jahres. Neue Tour hinzufügen, bestehende bearbeiten oder Status auf 'Vergangen' setzen."
+    files:
+      - name: wanderplan
+        label: "Touren verwalten"
+        file: content/wanderplan.json
+        fields:
+          - name: year
+            label: "Jahr (z.B. 2026)"
+            widget: string
+          - name: note
+            label: "Hinweistext unter dem Wanderplan"
+            widget: text
+            hint: "Allgemeiner Hinweis für alle Touren (z.B. Schuhwerk, Gäste willkommen)"
+          - name: touren
+            label: "Touren"
+            label_singular: "Tour"
+            widget: list
+            summary: "{{date}} – {{title}}"
+            fields:
+              - name: date
+                label: "Datum"
+                widget: date
+                format: "YYYY-MM-DD"
+                date_format: "DD.MM.YYYY"
+              - name: type
+                label: "Art der Tour"
+                widget: select
+                options:
+                  - { label: "Wanderung", value: "wanderung" }
+                  - { label: "Familienwanderung", value: "familie" }
+                  - { label: "Seniorentour", value: "senioren" }
+                  - { label: "E-Bike Tour", value: "ebike" }
+                  - { label: "Vereinsabend / Event", value: "event" }
+              - name: title
+                label: "Name der Tour"
+                widget: string
+                hint: "z.B. Frühlingswanderung Remstal"
+              - name: meta
+                label: "Details (Uhrzeit, Treffpunkt, Leitung)"
+                widget: string
+                hint: "z.B. 10:00 Uhr · Parkplatz MZH Steinenberg · Leitung: Max Mustermann"
+              - name: status
+                label: "Status"
+                widget: select
+                options:
+                  - { label: "Bevorstehend", value: "upcoming" }
+                  - { label: "Vergangen", value: "past" }
+
+  # ----------------------------------------------------------
+  #  SEITENEINSTELLUNGEN (mehrteilige Dateisammlung)
+  # ----------------------------------------------------------
+  - name: einstellungen
+    label: "⚙️ Einstellungen"
+    description: "Grundlegende Angaben zur Website und zum Verein."
+    files:
+
+      - name: siteinfo
+        label: "Allgemeine Seiteninfos"
+        file: content/siteinfo.json
+        fields:
+          - name: site_title
+            label: "Seitentitel (erscheint im Browser-Tab)"
+            widget: string
+          - name: meta_description
+            label: "Kurzbeschreibung für Suchmaschinen"
+            widget: text
+            hint: "Ca. 150 Zeichen – wird von Google in den Suchergebnissen angezeigt."
+          - name: member_count
+            label: "Anzahl Mitglieder"
+            widget: number
+            value_type: int
+          - name: tour_count
+            label: "Touren pro Jahr (ungefähr)"
+            widget: number
+            value_type: int
+          - name: new_members_year
+            label: "Neue Mitglieder dieses Jahr"
+            widget: number
+            value_type: int
+
+      - name: hero
+        label: "Startseite – Willkommensbereich"
+        file: content/hero.json
+        fields:
+          - name: eyebrow
+            label: "Kurzer Hinweistext (z.B. Mitgliederzahl)"
+            widget: string
+            hint: "Erscheint über der Hauptüberschrift, z.B. 'SAV OG Steinenberg · 174 Mitglieder'"
+          - name: title_line1
+            label: "Hauptüberschrift – erste Zeile"
+            widget: string
+          - name: title_line2
+            label: "Hauptüberschrift – zweite Zeile (kursiv)"
+            widget: string
+          - name: subtitle
+            label: "Untertitel"
+            widget: string
+
+      - name: kontakt
+        label: "Kontakt & Adresse"
+        file: content/kontakt.json
+        fields:
+          - name: vereinsname
+            label: "Vereinsname"
+            widget: string
+          - name: strasse
+            label: "Straße / Platz"
+            widget: string
+          - name: ort
+            label: "Ort (PLZ + Stadt)"
+            widget: string
+          - name: bundesland
+            label: "Bundesland"
+            widget: string
+          - name: ansprechpartner
+            label: "Name des Ansprechpartners"
+            widget: string
+          - name: telefon
+            label: "Telefonnummer (Anzeigeformat, z.B. 07183 428556)"
+            widget: string
+          - name: telefon_href
+            label: "Telefonnummer für Links (z.B. +497183428556)"
+            widget: string
+            hint: "Ohne Leerzeichen, mit Ländervorwahl +49, führende 0 weglassen"
+          - name: website
+            label: "Website-Adresse (nur Domain, z.B. albverein-steinenberg.de)"
+            widget: string
+          - name: website_href
+            label: "Vollständige Website-URL"
+            widget: string
+          - name: map_embed_url
+            label: "OpenStreetMap Einbettungs-URL"
+            widget: string
+            hint: "Nicht verändern, außer der Verein zieht um."
+          - name: map_link_url
+            label: "OpenStreetMap Navigations-URL"
+            widget: string
+
+  # ----------------------------------------------------------
+  #  ÜBER UNS
+  # ----------------------------------------------------------
+  - name: ueberuns
+    label: "🏔 Über uns"
+    files:
+      - name: ueberuns
+        label: "Text & Stichpunkte"
+        file: content/ueberuns.json
+        fields:
+          - name: absatz1
+            label: "Erster Absatz"
+            widget: markdown
+            hint: "**fettes Wort** für fettgedruckten Text"
+          - name: absatz2
+            label: "Zweiter Absatz"
+            widget: markdown
+          - name: absatz3
+            label: "Dritter Absatz (Mitgliederzahl etc.)"
+            widget: markdown
+          - name: features
+            label: "Häkchen-Liste (Vereinsmerkmale)"
+            label_singular: "Stichpunkt"
+            widget: list
+            field:
+              name: text
+              label: "Stichpunkt"
+              widget: string
+
+  # ----------------------------------------------------------
+  #  CHRONIK
+  # ----------------------------------------------------------
+  - name: chronik
+    label: "📅 Chronik"
+    files:
+      - name: chronik
+        label: "Chronik-Einträge"
+        file: content/chronik.json
+        fields:
+          - name: eintraege
+            label: "Einträge"
+            label_singular: "Eintrag"
+            widget: list
+            summary: "{{year}} – {{titel}}"
+            fields:
+              - name: year
+                label: "Jahr oder Zeitraum (z.B. 1977 oder 1960er)"
+                widget: string
+              - name: titel
+                label: "Überschrift"
+                widget: string
+              - name: beschreibung
+                label: "Beschreibung"
+                widget: text
+
+  # ----------------------------------------------------------
+  #  FÜHRUNGSTEAM
+  # ----------------------------------------------------------
+  - name: team
+    label: "👥 Führungsteam"
+    files:
+      - name: team
+        label: "Teammitglieder"
+        file: content/team.json
+        fields:
+          - name: mitglieder
+            label: "Personen"
+            label_singular: "Person"
+            widget: list
+            summary: "{{name}} ({{rolle}})"
+            fields:
+              - name: name
+                label: "Vollständiger Name"
+                widget: string
+              - name: kuerzel
+                label: "Kürzel (2 Buchstaben für das Avatar-Symbol)"
+                widget: string
+                pattern: ['^[A-ZÄÖÜ]{2}$', "Genau 2 Großbuchstaben"]
+              - name: rolle
+                label: "Funktion im Verein"
+                widget: string
+                hint: "z.B. Wanderwart / Familienprogramme"
+              - name: telefon
+                label: "Telefonnummer (leer lassen = zeigt 'Kontakt aufnehmen')"
+                widget: string
+                required: false
+
+  # ----------------------------------------------------------
+  #  BEITRÄGE & MITGLIEDSCHAFT
+  # ----------------------------------------------------------
+  - name: beitraege
+    label: "💶 Beiträge & Mitgliedschaft"
+    files:
+      - name: beitraege
+        label: "Preise & Leistungen"
+        file: content/beitraege.json
+        fields:
+          - name: jahr
+            label: "Jahr der Beitragsübersicht"
+            widget: string
+          - name: preise
+            label: "Beitragspreise"
+            label_singular: "Kategorie"
+            widget: list
+            summary: "{{kategorie}} – {{preis}}"
+            fields:
+              - name: kategorie
+                label: "Bezeichnung (z.B. Einzelmitglied)"
+                widget: string
+              - name: preis
+                label: "Preis (z.B. 20,00 €)"
+                widget: string
+          - name: hinweis
+            label: "Hinweistext unter der Tabelle"
+            widget: text
+          - name: leistungen
+            label: "Leistungen (Häkchen-Liste)"
+            label_singular: "Leistung"
+            widget: list
+            field:
+              name: text
+              label: "Leistung"
+              widget: string

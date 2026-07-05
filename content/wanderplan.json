@@ -1,0 +1,132 @@
+{
+  "year": "2026",
+  "touren": [
+    {
+      "date": "2026-01-19",
+      "type": "wanderung",
+      "title": "Neujahrstour Welzheimer Wald",
+      "meta": "10:00 Uhr · Parkplatz Stürzenhütte · Leitung: Rudi Müller",
+      "status": "past"
+    },
+    {
+      "date": "2026-02-16",
+      "type": "wanderung",
+      "title": "Winterwanderung Schurwald",
+      "meta": "13:30 Uhr · Ortsamt Steinenberg · Leitung: Ute Scherb",
+      "status": "past"
+    },
+    {
+      "date": "2026-03-09",
+      "type": "wanderung",
+      "title": "Frühlingswanderung Remstal",
+      "meta": "10:00 Uhr · Bahnhof Schorndorf · Leitung: Thomas Traxler",
+      "status": "past"
+    },
+    {
+      "date": "2026-04-06",
+      "type": "familie",
+      "title": "Ostertour Wieslauftal",
+      "meta": "10:00 Uhr · Parkplatz MZH Steinenberg · Leitung: Martina Traxler",
+      "status": "past"
+    },
+    {
+      "date": "2026-04-27",
+      "type": "senioren",
+      "title": "Seniorentour Burgsteige",
+      "meta": "13:30 Uhr · Ortsamt Steinenberg · Leitung: Monika Berckhemer",
+      "status": "past"
+    },
+    {
+      "date": "2026-05-11",
+      "type": "wanderung",
+      "title": "Blütenweg Schwäbische Alb",
+      "meta": "09:30 Uhr · Bahnhof Münsingen · Leitung: Manfred Scherb",
+      "status": "past"
+    },
+    {
+      "date": "2026-05-25",
+      "type": "ebike",
+      "title": "E-Biketour Schurwaldkamm",
+      "meta": "09:30 Uhr · Parkplatz Stürzenhütte · Leitung: Simon Blessing",
+      "status": "past"
+    },
+    {
+      "date": "2026-06-08",
+      "type": "familie",
+      "title": "Sommertour Lautertal",
+      "meta": "10:00 Uhr · Parkplatz MZH Steinenberg · Leitung: Sven Zeller",
+      "status": "past"
+    },
+    {
+      "date": "2026-06-22",
+      "type": "senioren",
+      "title": "Seniorentour Zollernalb",
+      "meta": "09:00 Uhr · Bushaltestelle Rathaus · Leitung: Monika Berckhemer",
+      "status": "past"
+    },
+    {
+      "date": "2026-07-05",
+      "type": "familie",
+      "title": "Auf dem Weg zum Zaubersee",
+      "meta": "10:00–16:00 Uhr · Parkplatz MZH Steinenberg · Leitung: Sven Zeller",
+      "status": "upcoming"
+    },
+    {
+      "date": "2026-07-12",
+      "type": "wanderung",
+      "title": "Rattenharz im Schurwald",
+      "meta": "13:30–17:00 Uhr · Ortsamt Steinenberg · Leitung: Ute & Manfred Scherb",
+      "status": "upcoming"
+    },
+    {
+      "date": "2026-07-26",
+      "type": "familie",
+      "title": "Auf ins Wental",
+      "meta": "10:00–16:00 Uhr · Parkplatz Stürzenhütte · Leitung: Martina & Thomas Traxler",
+      "status": "upcoming"
+    },
+    {
+      "date": "2026-08-23",
+      "type": "ebike",
+      "title": "6 Seen E-Biketour im Welzheimer Wald",
+      "meta": "09:30–17:00 Uhr · Parkplatz Stürzenhütte · Leitung: Simon Blessing",
+      "status": "upcoming"
+    },
+    {
+      "date": "2026-09-07",
+      "type": "wanderung",
+      "title": "Herbstwanderung Schurwald",
+      "meta": "10:00 Uhr · Parkplatz Stürzenhütte · Leitung: Rudi Müller",
+      "status": "upcoming"
+    },
+    {
+      "date": "2026-09-21",
+      "type": "senioren",
+      "title": "Herbstfarben Welzheimer Wald",
+      "meta": "13:00 Uhr · Ortsamt Steinenberg · Leitung: Monika Berckhemer",
+      "status": "upcoming"
+    },
+    {
+      "date": "2026-10-05",
+      "type": "familie",
+      "title": "Herbstfarben für Familien",
+      "meta": "10:00 Uhr · Parkplatz MZH Steinenberg · Leitung: Sven Zeller",
+      "status": "upcoming"
+    },
+    {
+      "date": "2026-10-19",
+      "type": "wanderung",
+      "title": "Jahresabschlusswanderung 2026",
+      "meta": "10:00 Uhr · Parkplatz Stürzenhütte · Gemeinsame Abschlusstour",
+      "status": "upcoming"
+    },
+    {
+      "date": "2026-11-15",
+      "type": "event",
+      "title": "Jahreshauptversammlung",
+      "meta": "19:00 Uhr · MZH Steinenberg · Mit Jahresrückblick und Ehrungen",
+      "status": "upcoming"
+    }
+  ],
+  "note": "Alle Touren sind offen für Gäste. Treffpunkt ist immer der genannte Parkplatz zur angegebenen Uhrzeit. Festes Schuhwerk empfohlen."
+}

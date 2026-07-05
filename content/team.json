@@ -1,0 +1,12 @@
+{
+  "mitglieder": [
+    { "name": "Michael Ehmann", "kuerzel": "ME", "rolle": "Webmaster / Schriftführer", "telefon": "07183 428556" },
+    { "name": "Christian Saur", "kuerzel": "CS", "rolle": "Kassier", "telefon": "07183 302162" },
+    { "name": "Thomas Traxler", "kuerzel": "TT", "rolle": "Wanderwart / Familienprogramme", "telefon": "" },
+    { "name": "Monika Berckhemer", "kuerzel": "MB", "rolle": "Seniorenvertreterin", "telefon": "07183 7111" },
+    { "name": "Günter Aupperle", "kuerzel": "GA", "rolle": "Wegewart", "telefon": "07183 7663" },
+    { "name": "Manfred Scherb", "kuerzel": "MS", "rolle": "Naturschutzbeauftragter", "telefon": "07183 2413" },
+    { "name": "Sven Zeller", "kuerzel": "SZ", "rolle": "Wanderführer Familien", "telefon": "" },
+    { "name": "Simon Blessing", "kuerzel": "SB", "rolle": "E-Bike Tourguide", "telefon": "" }
+  ]
+}

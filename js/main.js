@@ -88,8 +88,6 @@
 // ── Scroll reveal ─────────────────────────────────────────
 (function () {
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const items = document.querySelectorAll('.reveal');
-  if (prefersReduced) { items.forEach(el => el.classList.add('reveal--visible')); return; }
 
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -100,7 +98,15 @@
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-  items.forEach(el => observer.observe(el));
+  function observeAll() {
+    const items = document.querySelectorAll('.reveal:not(.reveal--visible)');
+    if (prefersReduced) { items.forEach(el => el.classList.add('reveal--visible')); return; }
+    items.forEach(el => observer.observe(el));
+  }
+
+  observeAll();
+  // Expose so cms-content.js can re-observe after rendering new elements
+  window.cmsObserveReveal = observeAll;
 })();
 
 // ── Nav scroll spy ────────────────────────────────────────
@@ -124,53 +130,68 @@
 })();
 
 // ── Tour search + filter ──────────────────────────────────
+// Deferred until cms-content.js has rendered the tour list from JSON.
+// Falls back automatically after 1 s if no CMS content script is present.
 (function () {
-  const searchInput = document.getElementById('tour-search');
-  const filterBtns  = document.querySelectorAll('.filter-btn');
-  const tourItems   = document.querySelectorAll('.tour-item');
-  const emptyMsg    = document.getElementById('tour-empty-msg');
-  if (!searchInput && !filterBtns.length) return;
+  let initialized = false;
 
-  let activeFilter = 'all';
-  let searchQuery  = '';
+  function init() {
+    if (initialized) return;
+    initialized = true;
 
-  function applyFilters() {
-    let visible = 0;
-    tourItems.forEach(item => {
-      const type   = item.dataset.type   || '';
-      const status = item.dataset.status || '';
-      const search = (item.dataset.search || '') + ' ' + (item.querySelector('.tour-item__title')?.textContent || '');
+    const searchInput = document.getElementById('tour-search');
+    const filterBtns  = document.querySelectorAll('.filter-btn');
+    const emptyMsg    = document.getElementById('tour-empty-msg');
+    if (!searchInput && !filterBtns.length) return;
 
-      const matchesFilter =
-        activeFilter === 'all'      ? true :
-        activeFilter === 'upcoming' ? status === 'upcoming' :
-        type === activeFilter;
+    let activeFilter = 'all';
+    let searchQuery  = '';
 
-      const matchesSearch = !searchQuery || search.toLowerCase().includes(searchQuery.toLowerCase());
+    function applyFilters() {
+      const tourItems = document.querySelectorAll('.tour-item'); // re-query after render
+      let visible = 0;
+      tourItems.forEach(item => {
+        const type   = item.dataset.type   || '';
+        const status = item.dataset.status || '';
+        const search = (item.dataset.search || '') + ' ' + (item.querySelector('.tour-item__title')?.textContent || '');
 
-      const show = matchesFilter && matchesSearch;
-      item.classList.toggle('tour-item--hidden', !show);
-      if (show) visible++;
+        const matchesFilter =
+          activeFilter === 'all'      ? true :
+          activeFilter === 'upcoming' ? status === 'upcoming' :
+          type === activeFilter;
+
+        const matchesSearch = !searchQuery || search.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const show = matchesFilter && matchesSearch;
+        item.classList.toggle('tour-item--hidden', !show);
+        if (show) visible++;
+      });
+      if (emptyMsg) emptyMsg.hidden = visible > 0;
+    }
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('filter-btn--active'));
+        btn.classList.add('filter-btn--active');
+        activeFilter = btn.dataset.filter;
+        applyFilters();
+      });
     });
 
-    if (emptyMsg) emptyMsg.hidden = visible > 0;
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        searchQuery = searchInput.value.trim();
+        applyFilters();
+      });
+    }
+
+    applyFilters(); // run once after init
   }
 
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('filter-btn--active'));
-      btn.classList.add('filter-btn--active');
-      activeFilter = btn.dataset.filter;
-      applyFilters();
-    });
-  });
-
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      searchQuery = searchInput.value.trim();
-      applyFilters();
-    });
-  }
+  // cms-content.js dispatches this event after rendering tour items
+  document.addEventListener('cms-ready', init);
+  // Fallback: initialize after 1 s even without cms-content.js
+  setTimeout(init, 1000);
 })();
 
 // ── Globe hero animation (Three.js + Leaflet satellite) ───

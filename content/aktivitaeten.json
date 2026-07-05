@@ -1,0 +1,36 @@
+{
+  "karten": [
+    {
+      "id": "wanderungen",
+      "titel": "Wanderungen",
+      "text": "Halbtages- und Tageswanderungen durch den Welzheimer Wald, die Schwäbische Alb und das Remstal — Natur pur vor der Haustür.",
+      "fakten": ["~18 Wanderungen / Jahr", "Verschiedene Schwierigkeitsgrade", "Offen für Gäste"],
+      "highlight": false,
+      "badge": ""
+    },
+    {
+      "id": "familie",
+      "titel": "Familienwanderungen",
+      "text": "Erlebnistouren für die ganze Familie — mit spannenden Zielen wie dem Zaubersee oder dem Wental. Kinder herzlich willkommen!",
+      "fakten": ["6 Familientouren / Jahr", "Kindgerechte Strecken", "Erlebnisziele"],
+      "highlight": false,
+      "badge": ""
+    },
+    {
+      "id": "senioren",
+      "titel": "Seniorengruppe",
+      "text": "Gemütliche Ausflüge und Wanderungen speziell für Senioren — in angepasstem Tempo, mit schönen Zielen und netter Gesellschaft.",
+      "fakten": ["6 Seniorentouren / Jahr", "Gemütliches Tempo", "Gemeinschaft & Austausch"],
+      "highlight": false,
+      "badge": ""
+    },
+    {
+      "id": "ebike",
+      "titel": "E-Bike Touren",
+      "text": "Erlebt den Welzheimer Wald mit dem E-Bike! Die 6-Seen-Tour führt zu traumhaften Aussichtspunkten im Schurwald.",
+      "fakten": ["Eigenes E-Bike erforderlich", "Wunderschöne Seenlandschaft", "Für alle Altersgruppen"],
+      "highlight": true,
+      "badge": "Neu"
+    }
+  ]
+}

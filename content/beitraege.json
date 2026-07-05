@@ -1,0 +1,21 @@
+{
+  "jahr": "2026",
+  "preise": [
+    { "kategorie": "Einzelmitglied", "preis": "20,00 €" },
+    { "kategorie": "Familienmitglied (Zusatz pro weiteres Mitglied)", "preis": "+ 12,00 €" },
+    { "kategorie": "Jugendliche bis 18 Jahre", "preis": "10,00 €" },
+    { "kategorie": "Ermäßigt (Schüler / Auszubildende)", "preis": "15,00 €" },
+    { "kategorie": "Passive Mitgliedschaft", "preis": "10,00 €" }
+  ],
+  "hinweis": "Beiträge werden per Lastschrift eingezogen. Anmeldung beim Vereinskassier oder über das Kontaktformular.",
+  "leistungen": [
+    "Alle Touren & Wanderungen kostenlos",
+    "SAV-Unfallversicherung auf Vereinsveranstaltungen",
+    "SAV-Mitgliedsausweis mit Vorteilen auf Hütten",
+    "Ermäßigungen auf SAV-Schutzhütten deutschlandweit",
+    "Einladung zu Jahresfest & Hauptversammlung",
+    "Aktuelle Infos via WhatsApp-Kanal",
+    "Mitgestaltung des Vereinslebens",
+    "Zugang zu SAV-Tourendatenbank & Karten"
+  ]
+}
