@@ -90,9 +90,10 @@ collections:
             fields:
               - name: date
                 label: "Datum"
-                widget: date
+                widget: datetime
                 format: "YYYY-MM-DD"
                 date_format: "DD.MM.YYYY"
+                time_format: false
               - name: type
                 label: "Art der Tour"
                 widget: select
