@@ -36,6 +36,7 @@ collections:
             label: "Beiträge"
             label_singular: "Beitrag"
             widget: list
+            required: false
             min: 0
             summary: "{{datum}} – {{titel}}"
             fields:
