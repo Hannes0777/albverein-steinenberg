@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
 
@@ -46,7 +45,7 @@
 
 <!-- Mobile menu lives outside <header> so backdrop-filter on the header
      does not trap position:fixed children (iOS Safari bug) -->
-<nav id="nav-menu" class="nav__menu" aria-label="Hauptnavigation">
+<nav id="nav-menu" class="nav__menu container" aria-label="Hauptnavigation">
   <ul role="list">
     <li><a href="#wanderplan"    class="nav__link">Wanderplan</a></li>
     <li><a href="#aktivitaeten"  class="nav__link">Aktivitäten</a></li>
@@ -61,41 +60,48 @@
 <main id="main-content">
 
   <!-- =====================================================
-       HERO — Globe zoom animation
+       HERO — Bergpanorama mit sanftem Parallax
        ===================================================== -->
-  <section id="hero" class="globe-hero" aria-label="Willkommen beim Schwäbischen Albverein Ortsgruppe Steinenberg">
-    <div class="globe-hero__sticky">
+  <section id="hero" class="hero" aria-label="Willkommen beim Schwäbischen Albverein Ortsgruppe Steinenberg">
 
-      <!-- Three.js WebGL globe -->
-      <canvas id="globe-canvas" class="globe-hero__canvas" aria-hidden="true"></canvas>
+    <div class="hero__sky" aria-hidden="true"></div>
+    <div class="hero__sun" aria-hidden="true"></div>
+    <div class="hero__clouds" aria-hidden="true">
+      <span class="hero__cloud hero__cloud--1"></span>
+      <span class="hero__cloud hero__cloud--2"></span>
+      <span class="hero__cloud hero__cloud--3"></span>
+    </div>
 
-      <!-- Satellite map – fades in at end of scroll -->
-      <div id="landing-map" class="globe-hero__landing-map" aria-hidden="true"></div>
+    <svg class="hero__mountains hero__mountains--back" data-parallax="0.12" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,220 L110,150 230,205 360,110 500,190 630,120 760,200 900,130 1040,195 1180,140 1320,200 1440,160 L1440,400 L0,400 Z"/>
+    </svg>
+    <svg class="hero__mountains hero__mountains--mid" data-parallax="0.24" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,280 L160,190 300,250 460,150 620,240 780,165 940,245 1100,175 1260,250 1440,200 L1440,400 L0,400 Z"/>
+    </svg>
+    <svg class="hero__mountains hero__mountains--front" data-parallax="0.4" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,340 L220,230 420,320 640,210 860,320 1080,225 1300,320 1440,260 L1440,400 L0,400 Z"/>
+    </svg>
 
-      <!-- Text (slides left as user scrolls) -->
-      <div class="globe-hero__content" id="globe-content">
-        <p class="globe-hero__eyebrow">SAV OG Steinenberg · 174 Mitglieder</p>
-        <img src="assets/images/logo.png"
-             alt="SAV OG Steinenberg – Schwäbischer Albverein"
-             class="globe-hero__logo">
-        <h1 class="globe-hero__title">Gemeinsam<br><em>auf dem Weg.</em></h1>
-        <p class="globe-hero__sub">Rund 20 Touren im Jahr — für Familien, Senioren und alle Naturbegeisterten.</p>
-      </div>
-
-      <!-- CTA (fades in at the village reveal) -->
-      <div class="globe-hero__cta" id="globe-cta" aria-hidden="true">
+    <div class="hero__content" id="hero-content">
+      <p class="hero__eyebrow hero__anim" style="--hero-delay:0.05s">SAV OG Steinenberg · 174 Mitglieder</p>
+      <img src="assets/images/logo.png"
+           alt="SAV OG Steinenberg – Schwäbischer Albverein"
+           class="hero__logo hero__anim" style="--hero-delay:0.15s">
+      <h1 class="hero__title hero__anim" style="--hero-delay:0.25s">Gemeinsam<br><em>auf dem Weg.</em></h1>
+      <p class="hero__sub hero__anim" style="--hero-delay:0.35s">Rund 20 Touren im Jahr — für Familien, Senioren und alle Naturbegeisterten.</p>
+      <div class="hero__cta hero__anim" style="--hero-delay:0.45s">
         <a href="#wanderplan" class="btn btn--white btn--lg">Nächste Touren</a>
         <a href="#mitglied" class="btn btn--outline-white btn--lg">Mitglied werden</a>
       </div>
-
-      <!-- Scroll indicator -->
-      <div class="globe-hero__scroll-cue" id="globe-scroll-cue" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-
     </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero__scroll-cue" id="hero-scroll-cue" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
   </section>
 
   <!-- =====================================================
@@ -132,6 +138,10 @@
       </ul>
 
       <p class="tour-empty-msg" id="tour-empty-msg" hidden>Keine Touren gefunden.</p>
+
+      <div class="tour-more-wrap" id="tour-more-wrap" hidden>
+        <button type="button" class="btn btn--outline" id="tour-more-btn">Weitere Touren anzeigen</button>
+      </div>
 
       <p class="events-note reveal">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
@@ -384,6 +394,10 @@
       <ol class="timeline" role="list">
         <!-- Wird per JavaScript geladen -->
       </ol>
+
+      <div class="chronik-more-wrap" id="chronik-more-wrap" hidden>
+        <button type="button" class="btn btn--outline" id="chronik-more-btn">Ganze Chronik anzeigen</button>
+      </div>
 
     </div>
   </section>
@@ -721,8 +735,6 @@
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <!-- CMS content loader — fetches JSON files and populates the page -->
 <script src="js/cms-content.js"></script>
 <script src="js/main.js"></script>

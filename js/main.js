@@ -21,12 +21,17 @@
 
 // ── Sticky navigation ─────────────────────────────────────
 (function () {
-  const nav  = document.getElementById('main-nav');
-  const hero = document.getElementById('hero');
+  const nav     = document.getElementById('main-nav');
+  const navMenu = document.getElementById('nav-menu'); // lives outside <header>, needs the class too
+  const hero    = document.getElementById('hero');
   if (!nav || !hero) return;
 
   new IntersectionObserver(
-    ([e]) => nav.classList.toggle('nav--scrolled', !e.isIntersecting),
+    ([e]) => {
+      const scrolled = !e.isIntersecting;
+      nav.classList.toggle('nav--scrolled', scrolled);
+      if (navMenu) navMenu.classList.toggle('nav--scrolled', scrolled);
+    },
     { threshold: 0.05 }
   ).observe(hero);
 })();
@@ -142,13 +147,34 @@
     const searchInput = document.getElementById('tour-search');
     const filterBtns  = document.querySelectorAll('.filter-btn');
     const emptyMsg    = document.getElementById('tour-empty-msg');
+    const moreWrap    = document.getElementById('tour-more-wrap');
+    const moreBtn     = document.getElementById('tour-more-btn');
     if (!searchInput && !filterBtns.length) return;
 
     let activeFilter = 'all';
     let searchQuery  = '';
+    let expanded     = false;
+
+    // Featured set shown by default: the next 3 upcoming tours + the last past tour.
+    // Only applies with no active search/filter, so search & filters still reach every tour.
+    function getFeatured(tourItems) {
+      const featured = new Set();
+      const past = tourItems
+        .filter(i => i.dataset.status === 'past')
+        .sort((a, b) => b.dataset.date.localeCompare(a.dataset.date));
+      const upcoming = tourItems
+        .filter(i => i.dataset.status === 'upcoming')
+        .sort((a, b) => a.dataset.date.localeCompare(b.dataset.date));
+      past.slice(0, 1).forEach(i => featured.add(i));
+      upcoming.slice(0, 3).forEach(i => featured.add(i));
+      return featured;
+    }
 
     function applyFilters() {
-      const tourItems = document.querySelectorAll('.tour-item'); // re-query after render
+      const tourItems = Array.from(document.querySelectorAll('.tour-item')); // re-query after render
+      const collapseActive = !expanded && activeFilter === 'all' && !searchQuery;
+      const featured = collapseActive ? getFeatured(tourItems) : null;
+
       let visible = 0;
       tourItems.forEach(item => {
         const type   = item.dataset.type   || '';
@@ -161,12 +187,18 @@
           type === activeFilter;
 
         const matchesSearch = !searchQuery || search.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesFeature = !collapseActive || featured.has(item);
 
-        const show = matchesFilter && matchesSearch;
+        const show = matchesFilter && matchesSearch && matchesFeature;
         item.classList.toggle('tour-item--hidden', !show);
         if (show) visible++;
       });
       if (emptyMsg) emptyMsg.hidden = visible > 0;
+
+      if (moreWrap) {
+        const hiddenCount = collapseActive ? tourItems.length - featured.size : 0;
+        moreWrap.hidden = hiddenCount <= 0;
+      }
     }
 
     filterBtns.forEach(btn => {
@@ -185,6 +217,13 @@
       });
     }
 
+    if (moreBtn) {
+      moreBtn.addEventListener('click', () => {
+        expanded = true;
+        applyFilters();
+      });
+    }
+
     applyFilters(); // run once after init
   }
 
@@ -194,224 +233,72 @@
   setTimeout(init, 1000);
 })();
 
-// ── Globe hero animation (Three.js + Leaflet satellite) ───
+// ── Chronik: show the beginning of the story, expand for more ─
+// Deferred until cms-content.js has rendered the timeline from JSON.
+(function () {
+  let initialized = false;
+
+  function init() {
+    if (initialized) return;
+    const items = document.querySelectorAll('.timeline-item');
+    const wrap  = document.getElementById('chronik-more-wrap');
+    const btn   = document.getElementById('chronik-more-btn');
+    if (!items.length || !wrap || !btn) return;
+    initialized = true;
+
+    if (items.length <= 1) return; // nothing to collapse
+
+    items.forEach((item, i) => { if (i > 0) item.classList.add('timeline-item--collapsed'); });
+    wrap.hidden = false;
+
+    btn.addEventListener('click', () => {
+      items.forEach(item => item.classList.remove('timeline-item--collapsed'));
+      wrap.hidden = true;
+      if (typeof window.cmsObserveReveal === 'function') window.cmsObserveReveal();
+    }, { once: true });
+  }
+
+  // cms-content.js dispatches this event after rendering the chronik
+  document.addEventListener('cms-ready', init);
+  // Fallback: initialize after 1 s even without cms-content.js
+  setTimeout(init, 1000);
+})();
+
+// ── Mountain hero: subtle parallax + scroll cue fade ──────
 (function () {
   'use strict';
 
-  const section    = document.getElementById('hero');
-  if (!section || !section.classList.contains('globe-hero')) return;
-  if (typeof THREE === 'undefined') return;
+  const hero  = document.getElementById('hero');
+  if (!hero) return;
 
-  const canvas     = document.getElementById('globe-canvas');
-  const landingMap = document.getElementById('landing-map');
-  const content    = document.getElementById('globe-content');
-  const ctaEl      = document.getElementById('globe-cta');
-  const cueEl      = document.getElementById('globe-scroll-cue');
-  if (!canvas) return;
+  const layers = hero.querySelectorAll('[data-parallax]');
+  const cue    = document.getElementById('hero-scroll-cue');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || !layers.length) return;
 
-  // ── Helpers ──────────────────────────────────────────────
-  const clamp    = (v, a, b) => Math.min(b, Math.max(a, v));
-  const lerp     = (a, b, t) => a + (b - a) * t;
-  const easeIn3  = t => t * t * t;
-  const easeOut2 = t => 1 - (1 - t) * (1 - t);
-  const easeIO   = t => t < 0.5 ? 4*t*t*t : 1 - 4*(1-t)*(1-t)*(1-t);
-  const mapR     = (v, a, b, c, d) => lerp(c, d, clamp((v - a) / (b - a), 0, 1));
+  let ticking = false;
 
-  // ── Three.js scene ────────────────────────────────────────
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0x00050f, 1);
+  function update() {
+    ticking = false;
+    const rect    = hero.getBoundingClientRect();
+    const scrolled = Math.max(0, -rect.top);
 
-  const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 200);
-  camera.position.z = 2.8;
-
-  // Earth textures (Three.js r134 repo, stable URLs with CORS)
-  const TEX = 'https://raw.githubusercontent.com/mrdoob/three.js/r134/examples/textures/planets/';
-  const loader = new THREE.TextureLoader();
-  loader.crossOrigin = 'anonymous';
-
-  const earthMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 64, 64),
-    new THREE.MeshPhongMaterial({
-      map:         loader.load(TEX + 'earth_atmos_2048.jpg'),
-      normalMap:   loader.load(TEX + 'earth_normal_2048.jpg'),
-      specularMap: loader.load(TEX + 'earth_specular_2048.jpg'),
-      specular:    new THREE.Color(0x333333),
-      shininess:   18,
-    })
-  );
-  scene.add(earthMesh);
-
-  // Cloud layer
-  const cloudMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1.007, 64, 64),
-    new THREE.MeshPhongMaterial({ map: loader.load(TEX + 'earth_clouds_1024.png'), transparent: true, opacity: 0.5 })
-  );
-  scene.add(cloudMesh);
-
-  // Atmosphere rim
-  scene.add(new THREE.Mesh(
-    new THREE.SphereGeometry(1.2, 32, 32),
-    new THREE.MeshBasicMaterial({ color: 0x4488ff, transparent: true, opacity: 0.1, side: THREE.BackSide })
-  ));
-
-  // Lighting – sun from upper-right
-  const sun = new THREE.DirectionalLight(0xfff5e0, 1.3);
-  sun.position.set(5, 3, 5);
-  scene.add(sun);
-  scene.add(new THREE.AmbientLight(0x223355, 0.35));
-
-  // Stars (point cloud)
-  const starPos = new Float32Array(3000 * 3);
-  for (let i = 0; i < starPos.length; i++) starPos[i] = (Math.random() - 0.5) * 200;
-  const starField = new THREE.Points(
-    (() => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(starPos, 3)); return g; })(),
-    new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, sizeAttenuation: true })
-  );
-  scene.add(starField);
-
-  // ── Exact quaternion so Steinenberg faces the camera ─────
-  // Three.js SphereGeometry maps texture as:
-  //   x = -R·cos(phi)·sin(theta),  z = R·sin(phi)·sin(theta),  y = R·cos(theta)
-  //   phi = U·2π,  theta = V·π
-  // Steinenberg: lon=9.55°E → U=0.5265 → phi=3.310 rad
-  //              lat=48.86°N → theta=0.718 rad (colatitude)
-  //   x = 0.650,  y = 0.752,  z = -0.110
-  const steinPos  = new THREE.Vector3(0.650, 0.752, -0.110).normalize();
-  const camFwd    = new THREE.Vector3(0, 0, 1);
-  const TGT_QUAT  = new THREE.Quaternion().setFromUnitVectors(steinPos, camFwd);
-
-  const Y_AXIS    = new THREE.Vector3(0, 1, 0);
-  const autoQuat  = new THREE.Quaternion();
-  const blendQuat = new THREE.Quaternion();
-  let autoAngle   = 0;
-
-  // Scroll progress
-  function getP() {
-    const scrollable = section.offsetHeight - window.innerHeight;
-    return scrollable > 0 ? clamp(window.scrollY / scrollable, 0, 1) : 0;
-  }
-
-  // ── Leaflet satellite map ─────────────────────────────────
-  let leaflet = null, mapInited = false;
-
-  function initLeaflet() {
-    if (mapInited || typeof L === 'undefined' || !landingMap) return;
-    mapInited = true;
-    leaflet = L.map('landing-map', {
-      zoomControl: false, attributionControl: true,
-      dragging: false, scrollWheelZoom: false,
-      doubleClickZoom: false, touchZoom: false,
+    layers.forEach(layer => {
+      const factor = parseFloat(layer.dataset.parallax) || 0.2;
+      layer.style.transform = `translateY(${scrolled * factor}px)`;
     });
-    // ESRI World Imagery (satellite) – free, no API key, proper attribution
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Imagery &copy; Esri, Maxar, GeoEye, Earthstar Geographics',
-      maxZoom: 19,
-    }).addTo(leaflet);
-    leaflet.setView([48.8632, 9.5541], 14);
 
-    // Custom teardrop pin
-    const pinIcon = L.divIcon({
-      className: '',
-      html: '<div class="lp-pin"><div class="lp-pin__ball"></div></div>',
-      iconAnchor: [14, 32],
-    });
-    L.marker([48.8632, 9.5541], { icon: pinIcon })
-      .bindPopup('<strong>Obersteinenberger Str.&nbsp;50</strong><br>73635 Rudersberg', { offset: [0, -10] })
-      .addTo(leaflet)
-      .openPopup();
-  }
-
-  // ── Animation loop ────────────────────────────────────────
-  let lastTime = 0;
-
-  function render(ts) {
-    const dt = Math.min(ts - lastTime, 50) / 1000;
-    lastTime = ts;
-
-    const p = getP();
-
-    // Auto-rotate (slows and stops as p approaches 0.75)
-    autoAngle += 0.28 * dt * (1 - clamp(p / 0.75, 0, 1));
-    autoQuat.setFromAxisAngle(Y_AXIS, autoAngle);
-
-    // Slerp from auto-rotation toward exact Germany quaternion
-    const rotP = easeIO(clamp(p / 0.80, 0, 1));
-    blendQuat.slerpQuaternions(autoQuat, TGT_QUAT, rotP);
-    earthMesh.quaternion.copy(blendQuat);
-    // Clouds: same rotation + tiny extra drift
-    cloudMesh.quaternion.copy(blendQuat);
-    cloudMesh.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(Y_AXIS, 0.004));
-
-    // Camera zoom
-    camera.position.z = lerp(2.8, 1.04, easeIn3(clamp(p / 0.92, 0, 1)));
-    camera.fov        = lerp(45, 28, easeIO(clamp(p / 0.92, 0, 1)));
-    camera.updateProjectionMatrix();
-
-    // Stars fade
-    starField.material.opacity = clamp(1 - p * 5, 0, 1);
-
-    renderer.render(scene, camera);
-
-    // Satellite map fade-in
-    const mapA = easeOut2(mapR(p, 0.78, 0.97, 0, 1));
-    if (mapA > 0.02 && !mapInited) initLeaflet();
-    if (landingMap) {
-      landingMap.style.opacity       = mapA;
-      landingMap.style.pointerEvents = mapA > 0.5 ? 'auto' : 'none';
-      landingMap.setAttribute('aria-hidden', mapA < 0.1 ? 'true' : 'false');
-      if (mapInited && leaflet && mapA > 0.1) leaflet.invalidateSize();
+    if (cue) {
+      const heroH = hero.offsetHeight || 1;
+      cue.style.opacity = String(Math.max(0, 1 - (scrolled / heroH) * 6));
     }
-
-    // Text slide-out
-    if (content) {
-      const slideP = easeOut2(mapR(p, 0.08, 0.44, 0, 1));
-      const textOp = 1 - easeOut2(mapR(p, 0.18, 0.50, 0, 1));
-      const mob    = window.innerWidth <= 768;
-      content.style.transform = mob
-        ? `translateX(-50%) translateY(calc(-50% - ${slideP * 60}%))`
-        : `translateY(-50%) translateX(${-slideP * 120}%)`;
-      content.style.opacity = Math.max(0, textOp);
-    }
-
-    // CTA buttons
-    if (ctaEl) {
-      const op = mapR(p, 0.85, 1, 0, 1);
-      ctaEl.style.opacity       = op;
-      ctaEl.style.pointerEvents = op > 0.4 ? 'auto' : 'none';
-      ctaEl.setAttribute('aria-hidden', op < 0.1 ? 'true' : 'false');
-    }
-
-    // Scroll cue
-    if (cueEl) cueEl.style.opacity = clamp(1 - p * 14, 0, 1);
-
-    requestAnimationFrame(render);
   }
 
-  // ── Resize ────────────────────────────────────────────────
-  function resize() {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    if (mapInited && leaflet) leaflet.invalidateSize();
-  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(update); ticking = true; }
+  }, { passive: true });
 
-  // prefers-reduced-motion: skip to satellite map immediately
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    section.style.height = '100vh';
-    if (content) content.style.opacity = '0';
-    if (cueEl)   cueEl.style.display = 'none';
-    if (ctaEl)   { ctaEl.style.opacity = '1'; ctaEl.style.pointerEvents = 'auto'; ctaEl.removeAttribute('aria-hidden'); }
-    if (landingMap) { landingMap.style.opacity = '1'; landingMap.style.pointerEvents = 'auto'; landingMap.removeAttribute('aria-hidden'); }
-    initLeaflet();
-    renderer.render(scene, camera);
-    return;
-  }
-
-  window.addEventListener('resize', resize, { passive: true });
-  requestAnimationFrame(ts => { lastTime = ts; requestAnimationFrame(render); });
+  update();
 })();
 
 // ── Contact form ──────────────────────────────────────────

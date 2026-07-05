@@ -221,13 +221,13 @@
 
   // ── 2. Hero ───────────────────────────────────────────────
   if (hero) {
-    const eyebrow = document.querySelector('.globe-hero__eyebrow');
+    const eyebrow = document.querySelector('.hero__eyebrow');
     if (eyebrow) eyebrow.textContent = hero.eyebrow;
 
-    const title = document.querySelector('.globe-hero__title');
+    const title = document.querySelector('.hero__title');
     if (title) title.innerHTML = `${hero.title_line1}<br><em>${hero.title_line2}</em>`;
 
-    const sub = document.querySelector('.globe-hero__sub');
+    const sub = document.querySelector('.hero__sub');
     if (sub) sub.textContent = hero.subtitle;
   }
 
