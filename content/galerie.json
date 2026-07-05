@@ -1,3 +1,8 @@
 {
-  "bilder": []
+  "bilder": [
+    {
+      "bild": "https://picsum.photos/id/779/1920/1280.webp",
+      "titel": ""
+    }
+  ]
 }
