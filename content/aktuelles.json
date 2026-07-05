@@ -1,11 +1,3 @@
 {
-  "beitraege": [
-    {
-      "datum": "05.07.2026",
-      "titel": "TEST",
-      "kategorie": "aktuell",
-      "text": "TEST",
-      "bild": ""
-    }
-  ]
+  "beitraege": []
 }
