@@ -298,6 +298,75 @@ collections:
                 required: false
 
   # ----------------------------------------------------------
+  #  BILDERGALERIE
+  # ----------------------------------------------------------
+  - name: galerie
+    label: "🖼 Bildergalerie"
+    description: "Fotos aus Wanderungen und Vereinsveranstaltungen. Bilder werden als Raster mit Lightbox angezeigt."
+    files:
+      - name: galerie
+        label: "Bilder verwalten"
+        file: content/galerie.json
+        fields:
+          - name: bilder
+            label: "Bilder"
+            label_singular: "Bild"
+            widget: list
+            required: false
+            min: 0
+            summary: "{{titel}}"
+            fields:
+              - name: bild
+                label: "Foto hochladen"
+                widget: image
+                hint: "Wird automatisch in /uploads/ gespeichert. Empfohlen: JPG, min. 800×600 px."
+              - name: titel
+                label: "Beschriftung (z.B. Wanderung Remstal, Mai 2026)"
+                widget: string
+                required: false
+
+  # ----------------------------------------------------------
+  #  DOWNLOADS
+  # ----------------------------------------------------------
+  - name: downloads
+    label: "📥 Downloads"
+    description: "Dokumente und Formulare zum Herunterladen (PDF, Word usw.)."
+    files:
+      - name: downloads
+        label: "Dokumente verwalten"
+        file: content/downloads.json
+        fields:
+          - name: dateien
+            label: "Dokumente"
+            label_singular: "Dokument"
+            widget: list
+            required: false
+            min: 0
+            summary: "{{titel}}"
+            fields:
+              - name: titel
+                label: "Bezeichnung (z.B. Wanderplan 2026)"
+                widget: string
+              - name: beschreibung
+                label: "Kurzbeschreibung (optional)"
+                widget: string
+                required: false
+                hint: "Wird klein unter dem Titel angezeigt"
+              - name: datei
+                label: "Datei hochladen (PDF, Word, …)"
+                widget: file
+                hint: "Wird automatisch in /uploads/ gespeichert."
+              - name: kategorie
+                label: "Kategorie"
+                widget: select
+                options:
+                  - { label: "Wanderplan / Touren", value: "wanderplan" }
+                  - { label: "Formular / Mitgliedschaft", value: "formular" }
+                  - { label: "Satzung / Protokoll", value: "satzung" }
+                  - { label: "Sonstiges", value: "sonstiges" }
+                default: "sonstiges"
+
+  # ----------------------------------------------------------
   #  BEITRÄGE & MITGLIEDSCHAFT
   # ----------------------------------------------------------
   - name: beitraege

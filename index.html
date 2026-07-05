@@ -516,16 +516,28 @@
         <p class="section__sub section__sub--light reveal">Eindrücke aus unseren Wanderungen und Vereinsveranstaltungen.</p>
       </header>
 
-      <div class="gallery-placeholder reveal">
-        <div class="gallery-placeholder__inner">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <div id="gallery-grid" class="gallery-grid reveal">
+        <!-- Wird per JavaScript aus content/galerie.json geladen -->
+        <div class="gallery-empty" id="gallery-empty">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
             <circle cx="8.5" cy="8.5" r="1.5" stroke="currentColor" stroke-width="1.5"/>
             <polyline points="21 15 16 10 5 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <h3>Bilder folgen in Kürze</h3>
-          <p>Wir füllen die Galerie mit Fotos aus unseren Touren und Vereinsveranstaltungen. Schau bald wieder vorbei!</p>
+          <p>Wir füllen die Galerie mit Fotos aus unseren Touren und Vereinsveranstaltungen.</p>
         </div>
+      </div>
+      <!-- Lightbox -->
+      <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Bildanzeige">
+        <div class="lightbox__backdrop" id="lightbox-backdrop"></div>
+        <button class="lightbox__close" id="lightbox-close" aria-label="Schließen">&times;</button>
+        <button class="lightbox__prev" id="lightbox-prev" aria-label="Vorheriges Bild">&#8249;</button>
+        <button class="lightbox__next" id="lightbox-next" aria-label="Nächstes Bild">&#8250;</button>
+        <figure class="lightbox__figure">
+          <img id="lightbox-img" src="" alt="" class="lightbox__img">
+          <figcaption id="lightbox-caption" class="lightbox__caption"></figcaption>
+        </figure>
       </div>
 
     </div>
@@ -543,53 +555,10 @@
         <p class="section__sub reveal">Formulare, Jahrespläne und Vereinsdokumente zum Herunterladen.</p>
       </header>
 
-      <ul class="download-list reveal" role="list">
-
-        <li class="download-item download-item--soon">
-          <div class="download-item__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="download-item__info">
-            <span class="download-item__title">Wanderplan 2026 (PDF)</span>
-            <span class="download-item__desc">Alle Touren und Veranstaltungen des Jahres auf einen Blick</span>
-          </div>
-          <span class="download-item__badge">Folgt</span>
-        </li>
-
-        <li class="download-item download-item--soon">
-          <div class="download-item__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="download-item__info">
-            <span class="download-item__title">Beitrittsformular (PDF)</span>
-            <span class="download-item__desc">Formular für die Aufnahme in den Verein</span>
-          </div>
-          <span class="download-item__badge">Folgt</span>
-        </li>
-
-        <li class="download-item download-item--soon">
-          <div class="download-item__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="download-item__info">
-            <span class="download-item__title">SEPA-Lastschriftmandat</span>
-            <span class="download-item__desc">Ermächtigung zum Bankeinzug des Mitgliedsbeitrags</span>
-          </div>
-          <span class="download-item__badge">Folgt</span>
-        </li>
-
-        <li class="download-item download-item--soon">
-          <div class="download-item__icon" aria-hidden="true">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="download-item__info">
-            <span class="download-item__title">Vereinssatzung</span>
-            <span class="download-item__desc">Aktuelle Satzung des SAV OG Steinenberg</span>
-          </div>
-          <span class="download-item__badge">Folgt</span>
-        </li>
-
+      <ul class="download-list" id="download-list" role="list">
+        <!-- Wird per JavaScript aus content/downloads.json geladen -->
       </ul>
+      <p class="downloads-empty" id="downloads-empty" hidden>Derzeit keine Dokumente verfügbar.</p>
 
     </div>
   </section>

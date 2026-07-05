@@ -168,8 +168,36 @@
   // Checkmark SVG reused for leistungen
   const CHECK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" stroke-width="2"/><polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
+  // ── Render gallery item ──────────────────────────────────
+  function renderGalleryItem(item, index) {
+    return `
+<li class="gallery-item reveal" data-index="${index}">
+  <button class="gallery-item__btn" aria-label="Bild vergrößern: ${item.titel || ''}">
+    <img src="${item.bild}" alt="${item.titel || ''}" loading="lazy" class="gallery-item__img">
+    ${item.titel ? `<span class="gallery-item__caption">${item.titel}</span>` : ''}
+  </button>
+</li>`.trim();
+  }
+
+  // ── Render download item ─────────────────────────────────
+  const DL_ICON = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><line x1="12" y1="12" x2="12" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><polyline points="9 15 12 18 15 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  function renderDownloadItem(d) {
+    return `
+<li class="download-item">
+  <div class="download-item__icon" aria-hidden="true">${DL_ICON}</div>
+  <div class="download-item__info">
+    <span class="download-item__title">${d.titel}</span>
+    ${d.beschreibung ? `<span class="download-item__desc">${d.beschreibung}</span>` : ''}
+  </div>
+  <a href="${d.datei}" download class="download-item__btn btn btn--primary btn--sm" aria-label="${d.titel} herunterladen">
+    Herunterladen
+  </a>
+</li>`.trim();
+  }
+
   // ── Fetch everything in parallel ─────────────────────────
-  const [site, hero, wanderplan, ueberuns, chronik, team, beitraege, kontakt, aktuelles] =
+  const [site, hero, wanderplan, ueberuns, chronik, team, beitraege, kontakt, aktuelles, galerie, downloads] =
     await Promise.all([
       fetchJSON('content/siteinfo.json'),
       fetchJSON('content/hero.json'),
@@ -180,6 +208,8 @@
       fetchJSON('content/beitraege.json'),
       fetchJSON('content/kontakt.json'),
       fetchJSON('content/aktuelles.json'),
+      fetchJSON('content/galerie.json'),
+      fetchJSON('content/downloads.json'),
     ]);
 
   // ── 1. Site meta ─────────────────────────────────────────
@@ -311,6 +341,36 @@
     if (newsSection) newsSection.hidden = items.length === 0;
   }
 
+  // ── 10. Galerie ───────────────────────────────────────────
+  const galleryGrid  = document.getElementById('gallery-grid');
+  const galleryEmpty = document.getElementById('gallery-empty');
+  const bilder = galerie?.bilder || [];
+  if (galleryGrid) {
+    if (bilder.length > 0) {
+      if (galleryEmpty) galleryEmpty.remove();
+      const ul = document.createElement('ul');
+      ul.className = 'gallery-items';
+      ul.setAttribute('role', 'list');
+      ul.innerHTML = bilder.map(renderGalleryItem).join('\n');
+      galleryGrid.appendChild(ul);
+      initLightbox(bilder);
+    }
+  }
+
+  // ── 11. Downloads ─────────────────────────────────────────
+  const dlList  = document.getElementById('download-list');
+  const dlEmpty = document.getElementById('downloads-empty');
+  const dateien = downloads?.dateien || [];
+  if (dlList) {
+    if (dateien.length > 0) {
+      dlList.innerHTML = dateien.map(renderDownloadItem).join('\n');
+      if (dlEmpty) dlEmpty.hidden = true;
+    } else {
+      dlList.hidden = true;
+      if (dlEmpty) dlEmpty.hidden = false;
+    }
+  }
+
   // ── Re-observe any newly added .reveal elements ──────────
   if (typeof window.cmsObserveReveal === 'function') {
     window.cmsObserveReveal();
@@ -320,3 +380,54 @@
   document.dispatchEvent(new Event('cms-ready'));
 
 })();
+
+// ── Lightbox ──────────────────────────────────────────────
+function initLightbox(bilder) {
+  const lb      = document.getElementById('lightbox');
+  const lbImg   = document.getElementById('lightbox-img');
+  const lbCap   = document.getElementById('lightbox-caption');
+  const lbClose = document.getElementById('lightbox-close');
+  const lbPrev  = document.getElementById('lightbox-prev');
+  const lbNext  = document.getElementById('lightbox-next');
+  const lbBack  = document.getElementById('lightbox-backdrop');
+  if (!lb || !lbImg) return;
+
+  let current = 0;
+
+  function show(index) {
+    current = (index + bilder.length) % bilder.length;
+    const b = bilder[current];
+    lbImg.src = b.bild;
+    lbImg.alt = b.titel || '';
+    lbCap.textContent = b.titel || '';
+    lbPrev.hidden = bilder.length <= 1;
+    lbNext.hidden = bilder.length <= 1;
+    lb.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lbClose.focus();
+  }
+
+  function close() {
+    lb.hidden = true;
+    lbImg.src = '';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('gallery-grid').addEventListener('click', e => {
+    const btn = e.target.closest('.gallery-item__btn');
+    if (!btn) return;
+    show(Number(btn.closest('.gallery-item').dataset.index));
+  });
+
+  lbClose.addEventListener('click', close);
+  lbBack.addEventListener('click', close);
+  lbPrev.addEventListener('click', () => show(current - 1));
+  lbNext.addEventListener('click', () => show(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft')  show(current - 1);
+    if (e.key === 'ArrowRight') show(current + 1);
+  });
+}
