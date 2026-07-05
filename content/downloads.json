@@ -1,3 +1,10 @@
 {
-  "dateien": []
+  "dateien": [
+    {
+      "titel": "test",
+      "beschreibung": "",
+      "datei": "/uploads/index.html",
+      "kategorie": "sonstiges"
+    }
+  ]
 }
