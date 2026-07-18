@@ -7,8 +7,9 @@ backend:
   name: github
   repo: Hannes0777/albverein-steinenberg
   branch: master
-  # Tragen Sie hier die URL Ihres Cloudflare-Workers ein (siehe SETUP.md)
-  base_url: https://sveltia-cms-auth.ehmann-hannes07.workers.dev
+  # Eigener Cloudflare-Worker nur für diese Website: E-Mail/Passwort-Login,
+  # kein GitHub-Account nötig, kein Zugriff auf andere Websites möglich.
+  base_url: https://cms-auth-albverein-steinenberg.ehmann-hannes07.workers.dev
 
 media_folder: uploads
 public_folder: /uploads
