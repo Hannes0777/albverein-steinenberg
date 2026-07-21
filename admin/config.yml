@@ -14,6 +14,14 @@ backend:
 media_folder: uploads
 public_folder: /uploads
 
+# Hochgeladene Dateinamen automatisch in URL-sichere Form bringen (Kleinbuchstaben,
+# Bindestriche statt Leerzeichen/Sonderzeichen) - verhindert kaputte Bild-Links,
+# wenn z.B. ein Foto direkt vom Handy mit Leerzeichen im Namen hochgeladen wird.
+media_libraries:
+  default:
+    config:
+      slugify_filename: true
+
 locale: de
 
 # ============================================================
