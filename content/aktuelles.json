@@ -1,3 +1,11 @@
 {
-  "beitraege": []
+  "beitraege": [
+    {
+      "datum": "test",
+      "titel": "test",
+      "kategorie": "aktuell",
+      "text": "test",
+      "bild": "https://picsum.photos/id/11/1920/1280.webp"
+    }
+  ]
 }
