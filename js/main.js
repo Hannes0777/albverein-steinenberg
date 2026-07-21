@@ -195,9 +195,14 @@
       });
       if (emptyMsg) emptyMsg.hidden = visible > 0;
 
-      if (moreWrap) {
-        const hiddenCount = collapseActive ? tourItems.length - featured.size : 0;
-        moreWrap.hidden = hiddenCount <= 0;
+      if (moreWrap && moreBtn) {
+        // The expand/collapse toggle only makes sense in the default view
+        // (no filter, no search) - a filter or search already shows every match.
+        const relevant = activeFilter === 'all' && !searchQuery;
+        const total = tourItems.length;
+        const featuredCount = getFeatured(tourItems).size;
+        moreWrap.hidden = !relevant || total - featuredCount <= 0;
+        moreBtn.textContent = expanded ? 'Weniger anzeigen' : 'Weitere Touren anzeigen';
       }
     }
 
@@ -219,8 +224,9 @@
 
     if (moreBtn) {
       moreBtn.addEventListener('click', () => {
-        expanded = true;
+        expanded = !expanded;
         applyFilters();
+        if (!expanded) moreWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       });
     }
 
@@ -248,14 +254,24 @@
 
     if (items.length <= 1) return; // nothing to collapse
 
-    items.forEach((item, i) => { if (i > 0) item.classList.add('timeline-item--collapsed'); });
+    let chronikExpanded = false;
+
+    function applyChronik() {
+      items.forEach((item, i) => {
+        item.classList.toggle('timeline-item--collapsed', !chronikExpanded && i > 0);
+      });
+      btn.textContent = chronikExpanded ? 'Chronik einklappen' : 'Ganze Chronik anzeigen';
+      if (typeof window.cmsObserveReveal === 'function') window.cmsObserveReveal();
+    }
+
+    applyChronik();
     wrap.hidden = false;
 
     btn.addEventListener('click', () => {
-      items.forEach(item => item.classList.remove('timeline-item--collapsed'));
-      wrap.hidden = true;
-      if (typeof window.cmsObserveReveal === 'function') window.cmsObserveReveal();
-    }, { once: true });
+      chronikExpanded = !chronikExpanded;
+      applyChronik();
+      if (!chronikExpanded) wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
   }
 
   // cms-content.js dispatches this event after rendering the chronik

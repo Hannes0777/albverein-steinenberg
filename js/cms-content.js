@@ -337,9 +337,12 @@
     } else {
       newsGrid.innerHTML = items.map(renderNewsCard).join('\n');
     }
-    // Hide the whole section if there are no entries
+    // Hide the whole section - and its nav links - if there are no entries
     const newsSection = document.getElementById('aktuelles');
     if (newsSection) newsSection.hidden = items.length === 0;
+    document.querySelectorAll('a[href="#aktuelles"]').forEach(link => {
+      (link.closest('li') || link).toggleAttribute('hidden', items.length === 0);
+    });
   }
 
   // ── 10. Galerie ───────────────────────────────────────────
