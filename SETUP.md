@@ -49,6 +49,20 @@ dort direkt von der Website eingelesen.
 
 ---
 
+## Kontaktformular
+
+Das Formular verschickt echte E-Mails über einen eigenen Cloudflare-Worker
+(`contact-form-albverein-steinenberg`) + [Resend](https://resend.com).
+
+> ⚠️ **Vor Übergabe an den echten Verein unbedingt ändern:** Anfragen landen
+> aktuell testweise bei `ehmann.hannes07@gmail.com`, nicht beim Verein. Sobald
+> eine echte Vereins-E-Mail-Adresse feststeht:
+> ```bash
+> cd contact-form-workers/albverein-steinenberg
+> echo -n "vereins-email@..." | npx wrangler secret put TO_EMAIL
+> ```
+> Details (Absenderadresse/Domain-Verifizierung) siehe `contact-form-workers/README.md`.
+
 ## Troubleshooting
 
 | Problem | Lösung |

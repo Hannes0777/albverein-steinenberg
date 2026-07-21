@@ -6,8 +6,17 @@
   "ansprechpartner": "Michael Ehmann",
   "telefon": "07183 428556",
   "telefon_href": "+497183428556",
+  "email": "",
   "website": "albverein-steinenberg.de",
   "website_href": "https://albverein-steinenberg.de",
   "map_embed_url": "https://www.openstreetmap.org/export/embed.html?bbox=9.5240%2C48.8431%2C9.5840%2C48.8831&layer=mapnik&marker=48.8632%2C9.5541",
-  "map_link_url": "https://www.openstreetmap.org/?mlat=48.8632&mlon=9.5541#map=17/48.8632/9.5541"
+  "map_link_url": "https://www.openstreetmap.org/?mlat=48.8632&mlon=9.5541#map=17/48.8632/9.5541",
+  "uebergeordneter_verein_name": "Schwäbischer Albverein e.V.",
+  "uebergeordneter_verein_adresse": "Hospitalstraße 21b · 70174 Stuttgart",
+  "uebergeordneter_verein_telefon": "0711 / 225 85-0",
+  "uebergeordneter_verein_telefon_href": "+497112258500",
+  "uebergeordneter_verein_praesident": "Dr. Hans-Ulrich Rauchfuß",
+  "uebergeordneter_verein_registergericht": "Amtsgericht Stuttgart",
+  "uebergeordneter_verein_registernummer": "2430",
+  "uebergeordneter_verein_ustid": "01/DE147849529"
 }

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Impressum der SAV OG Steinenberg – Ortsgruppe Steinenberg des Schwäbischen Albvereins – gemäß § 5 DDG.">
+  <title>Impressum – SAV OG Steinenberg</title>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Zum Inhalt springen</a>
+
+<!-- ── Fixed: Progress bar ─────────────────────────────── -->
+<div id="progress-bar" aria-hidden="true"><div id="progress-bar__fill"></div></div>
+
+<!-- =====================================================
+     NAVIGATION  (identisch zu index.html, Links zeigen auf
+     die jeweiligen Abschnitte der Startseite)
+     ===================================================== -->
+<header id="main-nav" class="nav nav--scrolled" role="banner">
+  <div class="container nav__inner">
+
+    <a href="index.html" class="nav__logo" aria-label="SAV OG Steinenberg – Startseite">
+      <img src="assets/images/logo.png"
+           alt="Schwäbischer Albverein Ortsgruppe Steinenberg"
+           class="nav__logo-img"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <span class="nav__logo-fallback" style="display:none">
+        <span class="nav__logo-sav">SAV</span>
+        <span class="nav__logo-og">OG Steinenberg</span>
+      </span>
+    </a>
+
+    <button id="nav-toggle" class="nav__toggle" aria-label="Navigation öffnen" aria-expanded="false" aria-controls="nav-menu">
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+      <span class="nav__toggle-bar"></span>
+    </button>
+
+  </div>
+</header>
+
+<nav id="nav-menu" class="nav__menu container nav--scrolled" aria-label="Hauptnavigation">
+  <ul role="list">
+    <li><a href="index.html#wanderplan"    class="nav__link">Wanderplan</a></li>
+    <li><a href="index.html#aktivitaeten"  class="nav__link">Aktivitäten</a></li>
+    <li><a href="index.html#aktuelles"     class="nav__link">Aktuelles</a></li>
+    <li><a href="index.html#ueber-uns"     class="nav__link">Verein</a></li>
+    <li><a href="index.html#galerie"       class="nav__link">Galerie</a></li>
+    <li><a href="index.html#kontakt"       class="nav__link">Kontakt</a></li>
+    <li><a href="index.html#mitglied" class="btn btn--primary btn--sm nav__cta">Mitglied werden</a></li>
+  </ul>
+</nav>
+
+<main id="main-content">
+
+  <!-- =====================================================
+       SEITENTITEL
+       ===================================================== -->
+  <section class="page-hero" aria-label="Seitentitel">
+    <div class="container">
+      <p class="section__eyebrow section__eyebrow--light">Rechtliches</p>
+      <h1 class="section__title section__title--light">Impressum</h1>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       IMPRESSUM-INHALT
+       Werte mit id="legal-…" werden von js/cms-content.js aus
+       content/kontakt.json bzw. content/rechtliches.json befüllt,
+       sobald diese im CMS gepflegt/geändert werden. Die hier
+       hinterlegten Texte sind der aktuelle Stand als Startwert.
+       ===================================================== -->
+  <section class="section section--white" aria-label="Impressum-Angaben">
+    <div class="container">
+
+      <div class="legal-content">
+
+        <h2>Angaben gemäß § 5 DDG (Digitale-Dienste-Gesetz, vormals § 5 TMG)</h2>
+
+        <div class="legal-callout" role="note">
+          <p class="legal-callout__label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="8" x2="12" y2="8.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Quelle dieser Angaben
+          </p>
+          <p>Die SAV OG Steinenberg ist die Ortsgruppe Steinenberg des Schwäbischen Albvereins e.V. und rechtlich unselbständiger Teil des Hauptvereins – nicht selbst im Vereinsregister eingetragen. Die folgenden Angaben zum Hauptverein sind dem öffentlichen Impressum auf albverein-steinenberg.de entnommen (Stand der Prüfung: 2026). Bitte bei Änderungen (z.&nbsp;B. neue Präsidentschaft) dort gegenprüfen.</p>
+        </div>
+
+        <h3>Verantwortlich (Hauptverein)</h3>
+        <address>
+          <strong id="legal-uebergeordneter-name">Schwäbischer Albverein e.V.</strong><br>
+          <span id="legal-uebergeordneter-adresse">Hospitalstraße 21b · 70174 Stuttgart</span>
+        </address>
+        <p>
+          Telefon: <a id="legal-uebergeordneter-telefon-link" href="tel:+497112258500"><span id="legal-uebergeordneter-telefon">0711 / 225 85-0</span></a>
+        </p>
+        <p>Eingetragen im Vereinsregister: <span id="legal-uebergeordneter-registergericht">Amtsgericht Stuttgart</span>, Registernummer <span id="legal-uebergeordneter-registernummer">2430</span></p>
+        <p>USt-IdNr.: <span id="legal-uebergeordneter-ustid">01/DE147849529</span></p>
+        <p>Vertretungsberechtigt: Präsident <span id="legal-uebergeordneter-praesident">Dr. Hans-Ulrich Rauchfuß</span></p>
+
+        <h3>Verantwortlich für den Inhalt dieser Unterseite (Ortsgruppe Steinenberg) gemäß § 18 Abs. 2 MStV</h3>
+        <address>
+          <span id="legal-vertreten-durch">Michael Ehmann</span><br>
+          <span id="legal-strasse">Kirchplatz</span><br>
+          <span id="legal-ort">73635 Rudersberg (Steinenberg)</span>
+        </address>
+        <p>
+          Telefon: <a id="legal-telefon-link" href="tel:+497183428556"><span id="legal-telefon">07183 428556</span></a><br>
+          E-Mail: <span id="legal-email-wrap" class="legal-placeholder">[BITTE ERGÄNZEN: Vereins-E-Mail-Adresse]</span>
+        </p>
+
+        <h2>EU-Streitschlichtung</h2>
+        <p>
+          Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:
+          <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a><br>
+          Unsere E-Mail-Adresse finden Sie oben in diesem Impressum.
+        </p>
+
+        <h2>Haftung für Inhalte</h2>
+        <p>Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+
+        <h2>Haftung für Links</h2>
+        <p>Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter verantwortlich.</p>
+
+        <h2>Urheberrecht</h2>
+        <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Für Fotos, die von Mitgliedern eingereicht werden (Bildergalerie), liegen die Nutzungsrechte beim Verein – <span class="legal-placeholder">[BITTE BESTÄTIGEN: Einverständnis der abgebildeten Personen/Fotografen liegt vor]</span>.</p>
+
+        <h2>Barrierefreiheit</h2>
+        <p>Diese Website wurde nach bestem Wissen zugänglich gestaltet (u.&nbsp;a. Tastaturbedienbarkeit, Alternativtexte für Bilder, klare Überschriftenstruktur, sichtbarer Fokusring). Vereine und Kleinstorganisationen sind vom Barrierefreiheitsstärkungsgesetz (BFSG) häufig ausgenommen. <span class="legal-placeholder">[BITTE PRÜFEN: ob diese Ausnahme im konkreten Einzelfall zutrifft – z.&nbsp;B. anhand der Mitarbeiterzahl/des Jahresumsatzes des übergeordneten Vereins]</span></p>
+
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- =====================================================
+     FOOTER  (identisch zu index.html)
+     ===================================================== -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <img src="assets/images/logo.png" alt="SAV OG Steinenberg" class="footer__logo" onerror="this.style.display='none'">
+      <p class="footer__tagline">Schwäbischer Albverein<br>Ortsgruppe Steinenberg</p>
+      <p class="footer__address-small">Kirchplatz · 73635 Rudersberg</p>
+    </div>
+    <nav class="footer__nav" aria-label="Footer-Navigation">
+      <a href="index.html#wanderplan">Wanderplan</a>
+      <a href="index.html#aktivitaeten">Aktivitäten</a>
+      <a href="index.html#familien">Wanderberichte</a>
+      <a href="index.html#aktuelles">Aktuelles</a>
+      <a href="index.html#ueber-uns">Über uns</a>
+      <a href="index.html#chronik">Chronik</a>
+      <a href="index.html#fuehrungsteam">Führungsteam</a>
+      <a href="index.html#beitraege">Beiträge</a>
+      <a href="index.html#galerie">Galerie</a>
+      <a href="index.html#downloads">Downloads</a>
+      <a href="index.html#kontakt">Kontakt</a>
+      <a href="https://albverein-steinenberg.de" target="_blank" rel="noopener noreferrer">Alte Website</a>
+    </nav>
+    <p class="footer__legal">
+      © <span id="footer-year"></span> SAV OG Steinenberg ·
+      <a href="impressum.html" aria-current="page">Impressum</a> · <a href="datenschutz.html">Datenschutz</a> ·
+      Mitglied des <a href="https://www.schwaebischer-albverein.de" target="_blank" rel="noopener noreferrer">Schwäbischen Albvereins e.V.</a>
+    </p>
+  </div>
+</footer>
+
+<!-- CMS content loader — fetches JSON files and populates the page -->
+<script src="js/cms-content.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

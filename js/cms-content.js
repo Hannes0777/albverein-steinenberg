@@ -197,7 +197,7 @@
   }
 
   // ── Fetch everything in parallel ─────────────────────────
-  const [site, hero, wanderplan, ueberuns, chronik, team, beitraege, kontakt, aktuelles, galerie, downloads] =
+  const [site, hero, wanderplan, ueberuns, chronik, team, beitraege, kontakt, aktuelles, galerie, downloads, rechtliches] =
     await Promise.all([
       fetchJSON('content/siteinfo.json'),
       fetchJSON('content/hero.json'),
@@ -210,6 +210,7 @@
       fetchJSON('content/aktuelles.json'),
       fetchJSON('content/galerie.json'),
       fetchJSON('content/downloads.json'),
+      fetchJSON('content/rechtliches.json'),
     ]);
 
   // ── 1. Site meta ─────────────────────────────────────────
@@ -368,6 +369,53 @@
     } else {
       dlList.hidden = true;
       if (dlEmpty) dlEmpty.hidden = false;
+    }
+  }
+
+  // ── 12. Rechtliches: Impressum & Datenschutzerklärung ────
+  // Only runs on pages that actually have these elements (impressum.html /
+  // datenschutz.html), so this is a no-op on index.html.
+  if (document.getElementById('legal-strasse')) {
+    if (kontakt) {
+      setText('legal-vereinsname', kontakt.vereinsname);
+      setText('legal-strasse', kontakt.strasse);
+      setText('legal-ort',     kontakt.ort);
+      setText('legal-telefon', kontakt.telefon);
+
+      const telLink = document.getElementById('legal-telefon-link');
+      if (telLink && kontakt.telefon_href) telLink.href = `tel:${kontakt.telefon_href}`;
+
+      // E-Mail: only replace the visible placeholder once a real address exists
+      const emailWrap = document.getElementById('legal-email-wrap');
+      if (emailWrap && kontakt.email && kontakt.email.trim()) {
+        emailWrap.innerHTML = `<a href="mailto:${kontakt.email}">${kontakt.email}</a>`;
+        emailWrap.classList.remove('legal-placeholder');
+      }
+
+      // Hauptverein (Schwäbischer Albverein e.V.) - laut dessen eigenem
+      // öffentlichen Impressum die tatsächlich verantwortliche Stelle,
+      // da die Ortsgruppe rechtlich unselbständig ist.
+      setText('legal-uebergeordneter-name',           kontakt.uebergeordneter_verein_name);
+      setText('legal-uebergeordneter-adresse',        kontakt.uebergeordneter_verein_adresse);
+      setText('legal-uebergeordneter-telefon',        kontakt.uebergeordneter_verein_telefon);
+      setText('legal-uebergeordneter-registergericht', kontakt.uebergeordneter_verein_registergericht);
+      setText('legal-uebergeordneter-registernummer',  kontakt.uebergeordneter_verein_registernummer);
+      setText('legal-uebergeordneter-ustid',           kontakt.uebergeordneter_verein_ustid);
+      setText('legal-uebergeordneter-praesident',      kontakt.uebergeordneter_verein_praesident);
+      const ubTelLink = document.getElementById('legal-uebergeordneter-telefon-link');
+      if (ubTelLink && kontakt.uebergeordneter_verein_telefon_href) {
+        ubTelLink.href = `tel:${kontakt.uebergeordneter_verein_telefon_href}`;
+      }
+
+      // "Verantwortlich für den Inhalt dieser Unterseite" falls back to the
+      // general Ansprechpartner unless a specific vertretungsberechtigte
+      // Person has been entered under Rechtliches (see below) - that field
+      // always wins once filled in.
+      if (kontakt.ansprechpartner) setText('legal-vertreten-durch', kontakt.ansprechpartner);
+    }
+
+    if (rechtliches && rechtliches.vertretungsberechtigte_person && rechtliches.vertretungsberechtigte_person.trim()) {
+      setText('legal-vertreten-durch', rechtliches.vertretungsberechtigte_person.trim());
     }
   }
 

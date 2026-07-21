@@ -197,6 +197,11 @@ collections:
             label: "Telefonnummer für Links (z.B. +497183428556)"
             widget: string
             hint: "Ohne Leerzeichen, mit Ländervorwahl +49, führende 0 weglassen"
+          - name: email
+            label: "E-Mail-Adresse (optional, wird u.a. im Impressum angezeigt)"
+            widget: string
+            required: false
+            hint: "Leer lassen, wenn noch keine Vereins-E-Mail eingerichtet ist – im Impressum erscheint dann ein auffälliger Hinweis, dass sie noch ergänzt werden muss."
           - name: website
             label: "Website-Adresse (nur Domain, z.B. albverein-steinenberg.de)"
             widget: string
@@ -210,6 +215,37 @@ collections:
           - name: map_link_url
             label: "OpenStreetMap Navigations-URL"
             widget: string
+          - name: uebergeordneter_verein_name
+            label: "Übergeordneter Verein – Name"
+            widget: string
+            hint: "Der Dachverband, dem diese Ortsgruppe angehört (für Impressum & Datenschutzerklärung)."
+          - name: uebergeordneter_verein_adresse
+            label: "Übergeordneter Verein – Adresse"
+            widget: string
+          - name: uebergeordneter_verein_telefon
+            label: "Übergeordneter Verein – Telefon (Anzeigeformat)"
+            widget: string
+          - name: uebergeordneter_verein_telefon_href
+            label: "Übergeordneter Verein – Telefon für Links (z.B. +497112258500)"
+            widget: string
+            hint: "Ohne Leerzeichen, mit Ländervorwahl +49, führende 0 weglassen"
+          - name: uebergeordneter_verein_praesident
+            label: "Übergeordneter Verein – Präsident/in (vertretungsberechtigt)"
+            widget: string
+            required: false
+            hint: "Erscheint im Impressum als vertretungsberechtigte Person des Hauptvereins."
+          - name: uebergeordneter_verein_registergericht
+            label: "Übergeordneter Verein – Registergericht"
+            widget: string
+            required: false
+          - name: uebergeordneter_verein_registernummer
+            label: "Übergeordneter Verein – Vereinsregisternummer"
+            widget: string
+            required: false
+          - name: uebergeordneter_verein_ustid
+            label: "Übergeordneter Verein – USt-IdNr."
+            widget: string
+            required: false
 
   # ----------------------------------------------------------
   #  ÜBER UNS
@@ -403,3 +439,40 @@ collections:
               name: text
               label: "Leistung"
               widget: string
+
+  # ----------------------------------------------------------
+  #  RECHTLICHES (Impressum & Datenschutz)
+  # ----------------------------------------------------------
+  - name: rechtliches
+    label: "⚖️ Rechtliches"
+    description: >
+      Zusätzliche rechtliche Angaben für Impressum & Datenschutzerklärung. Alle Felder sind
+      optional und dürfen leer bleiben – im Impressum erscheint dann ein gut sichtbarer Hinweis,
+      dass die Angabe noch geprüft/ergänzt werden muss. Bitte im Zweifel beim Dachverband
+      (Schwäbischer Albverein e.V.) oder einem Anwalt nachfragen, bevor hier etwas eingetragen
+      wird – diese Website kann keine Rechtsberatung ersetzen.
+    files:
+      - name: rechtliches
+        label: "Rechtliche Angaben"
+        file: content/rechtliches.json
+        fields:
+          - name: ust_id
+            label: "Umsatzsteuer-Identifikationsnummer (USt-IdNr.)"
+            widget: string
+            required: false
+            hint: "Nur ausfüllen, falls die Ortsgruppe/der Verein tatsächlich eine USt-IdNr. besitzt. Sonst leer lassen."
+          - name: vereinsregisternummer
+            label: "Vereinsregisternummer"
+            widget: string
+            required: false
+            hint: "Nur ausfüllen, falls diese Ortsgruppe selbst im Vereinsregister eingetragen ist (nicht nur der Dachverband). Im Zweifel beim Schwäbischen Albverein e.V. nachfragen."
+          - name: registergericht
+            label: "Registergericht"
+            widget: string
+            required: false
+            hint: "Das Amtsgericht, bei dem die Vereinsregisternummer oben eingetragen ist."
+          - name: vertretungsberechtigte_person
+            label: "Vertretungsberechtigte Person (z.B. 1. Vorsitzende/r)"
+            widget: string
+            required: false
+            hint: "Die laut Satzung zur Vertretung berechtigte Person. Falls leer, zeigt das Impressum ersatzweise den allgemeinen Ansprechpartner an – mit einem Hinweis, dies zu prüfen."

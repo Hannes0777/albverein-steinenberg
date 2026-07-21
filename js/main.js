@@ -312,13 +312,29 @@
     e.preventDefault();
     if (!form.checkValidity()) { form.reportValidity(); return; }
 
+    const errorEl = document.getElementById('cf-error-general');
+    const originalText = submit.textContent;
     submit.disabled = true;
     submit.textContent = 'Wird gesendet …';
+    if (errorEl) errorEl.hidden = true;
 
-    // Static site — simulate async send
-    setTimeout(function () {
-      form.hidden  = true;
-      success.hidden = false;
-    }, 800);
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    fetch('https://contact-form-albverein-steinenberg.ehmann-hannes07.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+      .then(res => res.json().then(body => ({ ok: res.ok && body.ok, body })))
+      .then(({ ok, body }) => {
+        if (!ok) throw new Error(body?.error || 'Versand fehlgeschlagen');
+        form.hidden  = true;
+        success.hidden = false;
+      })
+      .catch(() => {
+        submit.disabled = false;
+        submit.textContent = originalText;
+        if (errorEl) errorEl.hidden = false;
+      });
   });
 })();
