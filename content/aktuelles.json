@@ -1,3 +1,11 @@
 {
-  "beitraege": []
+  "beitraege": [
+    {
+      "datum": "21.07.2026",
+      "titel": "TEST",
+      "kategorie": "aktuell",
+      "text": "TEST TEST",
+      "bild": "/uploads/ChatGPT Image 26. Mai 2026, 20_39_23.png"
+    }
+  ]
 }
