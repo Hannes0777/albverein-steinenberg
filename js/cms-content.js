@@ -337,12 +337,8 @@
     } else {
       newsGrid.innerHTML = items.map(renderNewsCard).join('\n');
     }
-    // Hide the whole section - and its nav links - if there are no entries
-    const newsSection = document.getElementById('aktuelles');
-    if (newsSection) newsSection.hidden = items.length === 0;
-    document.querySelectorAll('a[href="#aktuelles"]').forEach(link => {
-      (link.closest('li') || link).toggleAttribute('hidden', items.length === 0);
-    });
+    // Section and its nav links always stay visible, with or without posts -
+    // "keine Beiträge" placeholder above covers the empty state.
   }
 
   // ── 10. Galerie ───────────────────────────────────────────
