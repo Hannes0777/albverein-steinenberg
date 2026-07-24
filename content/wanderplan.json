@@ -127,6 +127,13 @@
       "title": "Jahreshauptversammlung",
       "meta": "19:00 Uhr · MZH Steinenberg · Mit Jahresrückblick und Ehrungen",
       "status": "upcoming"
+    },
+    {
+      "date": "2027-02-06",
+      "type": "event",
+      "title": "Hauptversammlung",
+      "meta": "18.00Uhr Einlass",
+      "status": "upcoming"
     }
   ]
 }
